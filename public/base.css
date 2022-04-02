@@ -1,0 +1,13 @@
+
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  --color-primary: #64AAFF;
+  --color-secondary: #1F3F66;
+  --color-subtle: #CFCFCF;
+  --color-background: #F2F3FB;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  color: var(--color-secondary);
+}
