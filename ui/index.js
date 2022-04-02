@@ -1,9 +1,10 @@
-import { LitElement, html, css } from 'lit';
+import { html, css } from 'lit';
+import BaseElement from './base';
 import './deposit-overview';
 import './deposit-details';
 
 /** Custom `time-deposit` component */
-class TimeDeposit extends LitElement {
+class TimeDeposit extends BaseElement {
   static styles = css`
     :host {
       max-width: 1280px;

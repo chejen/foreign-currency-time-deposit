@@ -8,7 +8,7 @@ export default class BaseElement extends LitElement {
    */
   createRenderRoot() {
     const root = super.createRenderRoot();
-    const styleList = ['mobile.css'];
+    const styleList = ['base.css', 'mobile.css'];
     styleList.forEach((href) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
