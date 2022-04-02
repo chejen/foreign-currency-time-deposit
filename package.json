@@ -5,6 +5,7 @@
   "author": "chejen",
   "license": "MIT",
   "scripts": {
+    "lint": "eslint ui",
     "start": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   },
@@ -12,6 +13,8 @@
     "node": ">=14.0.0"
   },
   "devDependencies": {
+    "eslint": "^8.12.0",
+    "eslint-config-google": "^0.14.0",
     "webpack": "5.71.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.7.4",
