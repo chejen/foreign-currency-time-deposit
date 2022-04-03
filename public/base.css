@@ -12,6 +12,10 @@ html, body {
   margin: 0;
   color: var(--color-dark);
 }
+body {
+  display: flex;
+  justify-content: center;
+}
 * {
   box-sizing: border-box;
 }
