@@ -1,7 +1,10 @@
-import { LitElement, css, html } from 'lit';
+import { css, html } from 'lit';
+import { classMap } from 'lit/directives/class-map.js';
+import BaseElement from './base';
+import './component-table';
 
 /** Custom `component-card` component */
-class ComponentCard extends LitElement {
+class ComponentCard extends BaseElement {
   static styles = css`
     :host {
       display: block;
@@ -42,6 +45,16 @@ class ComponentCard extends LitElement {
       font-weight: 600;
       align-items: flex-end;
     }
+    component-table {
+      margin-top: 1rem;
+      display: block;
+    }
+
+    @media only screen and (min-width: 481px) and (max-width: 768px) {
+      .exchange-rate {
+        display: none;
+      }
+    }
     @media only screen and (max-width: 480px) {
       :host {
         padding: 5px;
@@ -57,6 +70,10 @@ class ComponentCard extends LitElement {
         justify-content: center;
         margin-right: 8px;
         color: var(--color-primary);
+        transition: .1s;
+      }
+      .arrow.rotate {
+        transform: rotate(90deg);
       }
       .amount {
         flex: 1;
@@ -76,8 +93,36 @@ class ComponentCard extends LitElement {
       .pl {
         padding-bottom: 3px;
       }
+      component-table {
+        display: none;
+      }
+      component-table.show {
+        display: block;
+      }
     }
   `;
+
+  static properties = {
+    isTableCollapsed: {
+      type: Boolean,
+      attribute: false,
+    },
+  };
+
+  /**
+   * Create a shadow DOM for <component-card>.
+   */
+  constructor() {
+    super();
+    this.isTableCollapsed = true;
+  }
+
+  /**
+   * Toggle the table
+   */
+  arrowClickHandler() {
+    this.isTableCollapsed = !this.isTableCollapsed;
+  }
 
   /**
    * To define a template for `component-card`
@@ -85,6 +130,13 @@ class ComponentCard extends LitElement {
    */
   render() {
     const num = 290000;
+    const arrowClasses = {
+      arrow: true,
+      rotate: !this.isTableCollapsed,
+    };
+    const tableClasses = {
+      show: !this.isTableCollapsed,
+    };
     return html`
       <div id="heading">
         <div id="date">
@@ -96,7 +148,12 @@ class ComponentCard extends LitElement {
         </div>
       </div>
       <div id="content">
-        <div class="arrow">&gt;</div>
+        <div
+          class="${classMap(arrowClasses)}"
+          @click="${this.arrowClickHandler}"
+        >
+          &gt;
+        </div>
         <div class="amount">
           <div class="field-name desktop-only">Deposit Amount:</div>
           <div class="foreign-currency">
@@ -126,6 +183,7 @@ class ComponentCard extends LitElement {
         </div>
         <div class="pl">-50000</div>
       </div>
+      <component-table class="${classMap(tableClasses)}"></component-table>
     `;
   }
 }
