@@ -41,11 +41,19 @@ class ComponentTable extends BaseElement {
       }
     }
     @media only screen and (max-width: 480px) {
+      :host {
+        width: 85%;
+        margin: 0 auto 10px;
+      }
       table {
         border: unset;
+        border-collapse: collapse;
       }
       table tr:nth-child(even) {
         background-color: unset;
+      }
+      table tr:not(:first-child):not(:last-child) {
+        border-bottom: 1px solid var(--color-light1);
       }
       table td {
         padding: 1px 5px;
