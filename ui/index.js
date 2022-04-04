@@ -9,6 +9,7 @@ class TimeDeposit extends BaseElement {
     :host {
       max-width: 1280px;
       height: 100%;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
