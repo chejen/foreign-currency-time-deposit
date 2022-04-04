@@ -1,11 +1,14 @@
 
 :root {
   font-family: Arial, Helvetica, sans-serif;
-  --color-primary: #0088FF;
+  --color-primary: #3E8ede;
   --color-secondary: #88CCFF;
+  --color-darkblue: #0353a4;
   --color-dark: #1F3F66;
   --color-light1: #AFAFAF;
   --color-light2: #F2F3FB;
+  --color-red: #FF5D8F;
+  --color-green: #38B000;
 }
 html, body {
   height: 100%;
@@ -18,4 +21,29 @@ body {
 }
 * {
   box-sizing: border-box;
+}
+label {
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding-right: 0.3rem;
+}
+input, select, button {
+  height: 1.8rem;
+  outline: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+input, select, button {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  background-color: white;
+}
+button {
+  color: white;
+  background-color: var(--color-primary);
+}
+label[required]::before {
+  content: '* ';
+  color: var(--color-red);
 }

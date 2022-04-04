@@ -29,16 +29,9 @@ class DepositOverview extends BaseElement {
       margin: 5px;
       padding: 8px;
       overflow: auto;
-      color: var(--color-dark);
+      background-color: var(--color-darkblue);
+      color: white;
       border-radius: 3px;
-      border: 1px solid var(--color-primary);
-      box-shadow: rgba(0, 0, 0, 0.35) 3px 3px 5px;
-    }
-    @media only screen and (max-width: 768px) {
-      .flex-content {
-        background-color: var(--color-primary);
-        color: white;
-      }
     }
     @media only screen and (min-width: 769px) and (max-width: 1024px) {
       .flex-item {
@@ -46,10 +39,6 @@ class DepositOverview extends BaseElement {
       }
     }
     @media only screen and (min-width: 481px) and (max-width: 768px) {
-      .flex-content {
-        background-color: var(--color-primary);
-        box-shadow: unset;
-      }
       .flex-item {
         width: 100%;
       }
@@ -67,10 +56,8 @@ class DepositOverview extends BaseElement {
         flex-shrink: 0;
       }
       .flex-content {
-        border: unset;
         border-radius: unset;
         margin: unset;
-        box-shadow: unset;
         scroll-snap-align: start;
       }
       #indicator {
@@ -87,7 +74,7 @@ class DepositOverview extends BaseElement {
         border: 1px solid var(--color-primary);
       }
       #indicator > div.active {
-        background-color: var(--color-secondary);
+        background-color: var(--color-primary);
       }
     }
   `;

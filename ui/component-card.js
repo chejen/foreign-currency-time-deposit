@@ -8,7 +8,7 @@ class ComponentCard extends BaseElement {
   static styles = css`
     :host {
       display: block;
-      padding: 15px;
+      padding: 5px;
       font-size: 0.9rem;
     }
     #heading {
@@ -57,7 +57,6 @@ class ComponentCard extends BaseElement {
     }
     @media only screen and (max-width: 480px) {
       :host {
-        padding: 5px;
         font-size: 0.8rem;
       }
       .desktop-only {

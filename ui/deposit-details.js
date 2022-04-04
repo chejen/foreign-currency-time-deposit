@@ -1,5 +1,7 @@
 import { html, css } from 'lit';
+import { classMap } from 'lit/directives/class-map.js';
 import BaseElement from './base';
+import './component-form';
 import './component-card';
 
 /** Custom `deposit-details` component */
@@ -11,60 +13,67 @@ class DepositDetails extends BaseElement {
       display: flex;
       flex-direction: column;
     }
-
     #operations {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 15px 5px 10px;
-      font-size: 0.9rem;
     }
-    #btn-add {
-      height: 1.8rem;
-      border-radius: 4px;
-      border: none;
-      color: white;
-      background-color: var(--color-primary);
-      font-size: 0.9rem;
-    }
-    #btn-add span:first-child {
-      font-size: 1.3rem;
-      margin-right: 0.3rem;
-    }
-    #btn-add:hover {
-      color: var(--color-secondary);
-      cursor: pointer;
-    }
-    #btn-add:active {
-      color: var(--color-dark);
-      background-color: var(--color-secondary);
-    }
-    #sorting-wrapper, #btn-add {
-      display: flex;
-      align-items: center;
-    }
-    #sorting-wrapper label {
+    #operations * {
       color: var(--color-primary);
     }
-    select {
-      height: 1.8rem;
-      outline: none;
-      border-radius: 4px;
+    .symbol-button {
+      display: none;
+    }
+    #sorting {
       border: 1px solid var(--color-primary);
-      color: var(--color-primary);
-      background-color: white;
-      font-size: 0.9rem;
     }
-
     #cards {
       flex: 1;
       overflow-x: auto;
     }
 
+    @media only screen and (max-width: 768px) {
+      component-form {
+        display: none;
+        opacity: 0;
+      }
+      component-form.show {
+        display: flex;
+        opacity: 0;
+        width: 100%;
+        animation: fade-in .2s ease 0.1s;
+        animation-fill-mode: forwards;
+      }
+      @keyframes fade-in {
+        0% {
+          opacity: 0;
+          transform: translate(0, 10%);
+        }
+        100% {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+      }
+      .symbol-button {
+        display: block;
+        font-size: 1.3rem;
+        font-weight: 700;
+        border: 2px solid var(--color-primary);
+        border-radius: 0.9rem;
+        width: 1.6rem;
+        height: 1.6rem;
+        text-align: center;
+        transition: .2s;
+        transition-delay: .1s;
+      }
+      .symbol-button.active {
+        transform: rotate(315deg);
+      }
+    }
     @media only screen and (min-width: 481px) {
       #cards component-card {
-        margin: 15px 5px;
-        border: 1px solid var(--color-light1);
+        margin: 25px 0;
       }
     }
     @media only screen and (max-width: 480px) {
@@ -73,6 +82,28 @@ class DepositDetails extends BaseElement {
       }
     }
   `;
+
+  static properties = {
+    isFormHidden: {
+      type: Boolean,
+      attribute: false,
+    },
+  };
+
+  /**
+   * Create a shadow DOM for <deposit-details>.
+   */
+  constructor() {
+    super();
+    this.isFormHidden = true;
+  }
+
+  /**
+   * Toggle the addition form
+   */
+  symbolClickHandler() {
+    this.isFormHidden = !this.isFormHidden;
+  }
 
   /**
    * Perform corresponding sorting functions.
@@ -87,15 +118,26 @@ class DepositDetails extends BaseElement {
    * @return {TemplateResult} template result
    */
   render() {
+    const formClasses = {
+      'show': !this.isFormHidden,
+    };
+    const symbolClasses = {
+      'symbol-button': true,
+      'active': !this.isFormHidden,
+    };
     return html`
+      <component-form class="${classMap(formClasses)}"></component-form>
       <div id="operations">
-        <button id="btn-add">
-          <span>&plus;</span>
-          <span>Add</span>
-        </button>
+        <div>
+          <div
+            class="${classMap(symbolClasses)}"
+            @click="${this.symbolClickHandler}"
+          >
+            &plus;
+          </div>
+        </div>
         <div id="sorting-wrapper">
-          <label for="sorting">Sort by:</label>
-          &nbsp;
+          <label for="sorting">Sort by</label>
           <select id="sorting" @change="${this.selectChangeHandler}">
             <option value="account-asc">Deposit Account (ASC)</option>
             <option value="account-desc">Deposit Account (DESC)</option>

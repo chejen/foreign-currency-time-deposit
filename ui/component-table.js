@@ -8,9 +8,6 @@ class ComponentTable extends BaseElement {
       width: 100%;
       background-color: var(--color-light2);
     }
-    table th {
-      text-decoration: underline;
-    }
     table tr:nth-child(even) {
       background-color: white;
     }
@@ -21,7 +18,6 @@ class ComponentTable extends BaseElement {
     @media only screen and (max-width: 768px) {
       table {
         background-color: unset;
-        border: 1px solid var(--color-light1);
       }
       table th {
         display: none;
@@ -46,7 +42,6 @@ class ComponentTable extends BaseElement {
         margin: 0 auto 10px;
       }
       table {
-        border: unset;
         border-collapse: collapse;
       }
       table tr:nth-child(even) {
