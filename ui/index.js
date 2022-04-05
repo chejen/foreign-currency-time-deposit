@@ -1,8 +1,12 @@
 import { html, css } from 'lit';
 import BaseElement from './base';
+import './component-toast';
 import './deposit-overview';
 import './deposit-details';
-import { firebaseConfig } from './actions';
+import {
+  initializationError,
+  getDeposits,
+} from './actions';
 
 /** Custom `time-deposit` component */
 class TimeDeposit extends BaseElement {
@@ -32,18 +36,54 @@ class TimeDeposit extends BaseElement {
   `;
 
   /**
+   * Invoked when the <time-deposit> is appended.
+   */
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('depositlistchanged', this);
+    if (!initializationError) {
+      getDeposits();
+    }
+  }
+
+  /**
+   * A event handler for time-deposit
+   * @param {CustomEvent} event A custom event
+   */
+  handleEvent = (event) => {
+    console.log(event.detail, event.type);
+    const { success } = event.detail;
+    switch (event.type) {
+      case 'depositlistchanged':
+        !success && window.dispatchEvent(new CustomEvent('toastshow', {
+          detail: {
+            message: 'Failed to load deposit list.',
+            type: 'error',
+          },
+        }));
+        break;
+    }
+  };
+
+  /**
+   * Called when the <time-deposit> is removed.
+   */
+  disconnectedCallback() {
+    window.addEventListener('depositlistchanged', this);
+    super.disconnectedCallback();
+  }
+
+  /**
    * To define a template for `time-deposit`
    * @return {TemplateResult} template result
    */
   render() {
-    return firebaseConfig ?
+    return initializationError ?
+      html`<div class="error message">${initializationError}</div>` :
       html`
         <deposit-overview></deposit-overview>
         <deposit-details></deposit-details>
-      ` :
-      html`<div class="error message">
-        There is something wrong with your firebaseConfig!
-      </div>`;
+      `;
   }
 }
 
