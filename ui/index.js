@@ -51,14 +51,23 @@ class TimeDeposit extends BaseElement {
    * @param {CustomEvent} event A custom event
    */
   handleEvent = (event) => {
-    console.log(event.detail, event.type);
-    const { success } = event.detail;
-    switch (event.type) {
-      case 'depositlistchanged':
+    const { success, type } = event.detail;
+    switch (type) {
+      case 'getDeposits':
         !success && window.dispatchEvent(new CustomEvent('toastshow', {
           detail: {
             message: 'Failed to load deposit list.',
             type: 'error',
+          },
+        }));
+        break;
+      case 'createDepositAccount':
+        window.dispatchEvent(new CustomEvent('toastshow', {
+          detail: {
+            message: success ?
+              'Successfully add a deposit account.':
+              'Failed to add a deposit account.',
+            type: success ? 'success' : 'error',
           },
         }));
         break;
@@ -69,7 +78,7 @@ class TimeDeposit extends BaseElement {
    * Called when the <time-deposit> is removed.
    */
   disconnectedCallback() {
-    window.addEventListener('depositlistchanged', this);
+    window.removeEventListener('depositlistchanged', this);
     super.disconnectedCallback();
   }
 

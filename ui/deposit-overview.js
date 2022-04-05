@@ -97,7 +97,7 @@ class DepositOverview extends BaseElement {
   /**
    * Detect which position the carousel is at
    * by leveraging #slides' scroll event.
-   * @param {object} event - scroll event
+   * @param {Event} event - scroll event
    */
   scrollHandler(event) {
     clearTimeout(this._scrollTimer);

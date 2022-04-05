@@ -80,7 +80,7 @@ class ComponentToast extends BaseElement {
    * Called when the <component-toast> is removed.
    */
   disconnectedCallback() {
-    window.addEventListener('toastshow', this);
+    window.removeEventListener('toastshow', this);
     super.disconnectedCallback();
   }
 
