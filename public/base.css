@@ -47,3 +47,7 @@ label[required]::before {
   content: '* ';
   color: var(--color-red);
 }
+
+.error {
+  color: var(--color-red);
+}

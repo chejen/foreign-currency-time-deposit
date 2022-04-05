@@ -2,6 +2,7 @@ import { html, css } from 'lit';
 import BaseElement from './base';
 import './deposit-overview';
 import './deposit-details';
+import { firebaseConfig } from './actions';
 
 /** Custom `time-deposit` component */
 class TimeDeposit extends BaseElement {
@@ -13,6 +14,12 @@ class TimeDeposit extends BaseElement {
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+    .message {
+      border: 1px solid var(--color-red);
+      border-radius: 3px;
+      padding: 10px;
+      margin-top: 30px;
     }
     deposit-details {
       flex: 1;
@@ -29,10 +36,14 @@ class TimeDeposit extends BaseElement {
    * @return {TemplateResult} template result
    */
   render() {
-    return html`
-      <deposit-overview></deposit-overview>
-      <deposit-details></deposit-details>
-    `;
+    return firebaseConfig ?
+      html`
+        <deposit-overview></deposit-overview>
+        <deposit-details></deposit-details>
+      ` :
+      html`<div class="error message">
+        There is something wrong with your firebaseConfig!
+      </div>`;
   }
 }
 

@@ -1,4 +1,6 @@
 const path = require('path');
+const webpack = require('webpack');
+require('dotenv').config();
 
 module.exports = {
   entry: './ui/index.js',
@@ -6,4 +8,11 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'public', 'dist'),
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        firebaseConfig: JSON.stringify(process.env.firebaseConfig),
+      },
+    }),
+  ],
 };
