@@ -12,6 +12,12 @@
     "sourceType": "module"
   },
   "rules": {
-      "object-curly-spacing": ["warn", "always"]
+    "indent": [
+      "error", 2, {
+        "SwitchCase": 1,
+        "ignoredNodes": ["TemplateLiteral *"]
+      }
+    ],
+    "object-curly-spacing": ["warn", "always"]
   }
 }

@@ -35,6 +35,21 @@ class TimeDeposit extends BaseElement {
     }
   `;
 
+  static properties = {
+    deposits: {
+      type: Array,
+      attribute: false,
+    },
+  };
+
+  /**
+   * Create a shadow DOM for <time-deposit>.
+   */
+  constructor() {
+    super();
+    this.deposits = [];
+  }
+
   /**
    * Invoked when the <time-deposit> is appended.
    */
@@ -51,7 +66,8 @@ class TimeDeposit extends BaseElement {
    * @param {CustomEvent} event A custom event
    */
   handleEvent = (event) => {
-    const { success, type } = event.detail;
+    const { success, type, result } = event.detail;
+    this.deposits = result;
     switch (type) {
       case 'getDeposits':
         !success && window.dispatchEvent(new CustomEvent('toastshow', {
@@ -91,7 +107,7 @@ class TimeDeposit extends BaseElement {
       html`<div class="error message">${initializationError}</div>` :
       html`
         <deposit-overview></deposit-overview>
-        <deposit-details></deposit-details>
+        <deposit-details .deposits="${this.deposits}"></deposit-details>
       `;
   }
 }

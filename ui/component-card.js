@@ -3,6 +3,9 @@ import { classMap } from 'lit/directives/class-map.js';
 import BaseElement from './base';
 import './component-table';
 
+const format = (num) =>
+  new Intl.NumberFormat(undefined, { maximumFractionDigits: 4 }).format(num);
+
 /** Custom `component-card` component */
 class ComponentCard extends BaseElement {
   static styles = css`
@@ -106,6 +109,10 @@ class ComponentCard extends BaseElement {
       type: Boolean,
       attribute: false,
     },
+    deposit: {
+      type: Object,
+      attribute: false,
+    },
   };
 
   /**
@@ -114,6 +121,7 @@ class ComponentCard extends BaseElement {
   constructor() {
     super();
     this.isTableCollapsed = true;
+    this.deposit = {};
   }
 
   /**
@@ -136,14 +144,25 @@ class ComponentCard extends BaseElement {
     const tableClasses = {
       show: !this.isTableCollapsed,
     };
+    const {
+      time_deposit_account: account,
+      year,
+      month,
+      day,
+      cost,
+      exchange_rate: exchangeRate,
+      currency,
+    } = this.deposit;
+    const date = new Date(Date.UTC(year, month, day)).toLocaleDateString();
+
     return html`
       <div id="heading">
         <div id="date">
           <span class="desktop-only">Deposit Date: </span>
-          2020/02/20
+          ${date}
         </div>
         <div id="account">
-          <span class="desktop-only">Account: </span>123456789
+          <span class="desktop-only">Account: </span>${account}
         </div>
       </div>
       <div id="content">
@@ -156,12 +175,16 @@ class ComponentCard extends BaseElement {
         <div class="amount">
           <div class="field-name desktop-only">Deposit Amount:</div>
           <div class="foreign-currency">
-            <span class="digits">100000</span> in USD
-            <span class="exchange-rate">(exchange rate: 29.5123)</span>
+            <span class="digits">${format(cost / exchangeRate)}</span>
+            &nbsp;
+            in ${currency}
+            <span class="exchange-rate">
+              (exchange rate: ${format(exchangeRate)})
+            </span>
           </div>
           <div class="original-equivalent">
             <span class="digits">
-              ${num.toLocaleString('en', { useGrouping: true })}
+              ${format(cost)}
             </span>
             in NTD equivalent
           </div>

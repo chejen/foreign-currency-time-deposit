@@ -32,6 +32,14 @@ class DepositDetails extends BaseElement {
       flex: 1;
       overflow-x: auto;
     }
+    .no-data {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--color-light1);
+      font-size: 0.9rem;
+    }
 
     @media only screen and (max-width: 768px) {
       component-form {
@@ -88,6 +96,10 @@ class DepositDetails extends BaseElement {
       type: Boolean,
       attribute: false,
     },
+    deposits: {
+      type: Array,
+      attribute: false,
+    },
   };
 
   /**
@@ -96,6 +108,7 @@ class DepositDetails extends BaseElement {
   constructor() {
     super();
     this.isFormHidden = true;
+    this.deposits = [];
   }
 
   /**
@@ -152,18 +165,13 @@ class DepositDetails extends BaseElement {
         </div>
       </div>
       <div id="cards">
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
-        <component-card></component-card>
+        ${this.deposits.length ?
+          null :
+          html`<div class="no-data">No time deposit records</div>`
+        }
+        ${this.deposits.map((deposit) => (
+          html`<component-card .deposit="${deposit}"></component-card>`
+        ))}
       </div>
     `;
   }
