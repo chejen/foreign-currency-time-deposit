@@ -1,8 +1,17 @@
 import { css, html } from 'lit';
 import BaseElement from './base';
 import { updateDepositHistory } from './actions';
-import { ERROR_CODE } from './constants';
+import { HEADER_NAME } from './constants';
 import { format, toFixed } from './utils';
+
+const {
+  INTEREST_START_DATE,
+  INTEREST_END_DATE,
+  INTEREST_RATE,
+  PRINCIPAL_AMOUNT,
+  GROSS_INTEREST_AMOUNT,
+  AVAILABLE_BALANCE,
+} = HEADER_NAME;
 
 /** Custom `component-table` component */
 class ComponentTable extends BaseElement {
@@ -64,18 +73,6 @@ class ComponentTable extends BaseElement {
       type: Object,
       attribute: false,
     },
-    errDepositAmount: {
-      type: String,
-      attribute: false,
-    },
-    errGrossAmount: {
-      type: String,
-      attribute: false,
-    },
-    errInterestRate: {
-      type: String,
-      attribute: false,
-    },
   };
 
   /**
@@ -87,44 +84,6 @@ class ComponentTable extends BaseElement {
   }
 
   /**
-   * Invoked when the <component-table> is appended.
-   */
-  connectedCallback() {
-    super.connectedCallback();
-    this.shadowRoot.addEventListener('input', this.inputHandler);
-  }
-
-  /**
-   * Called when the <component-table> is removed.
-   */
-  disconnectedCallback() {
-    this.shadowRoot.removeEventListener('input', this.inputHandler);
-    super.disconnectedCallback();
-  }
-
-  /**
-   * Validate the data when the input values change
-   * @param {InputEvent} event - input event
-   */
-  inputHandler = (event) => {
-    const { name, value } = event.target;
-    const newValue = +value.trim();
-    const errorMessage = newValue ? '' :
-      ERROR_CODE[isNaN(newValue) ? '02' : '01'];
-    switch (name) {
-      case 'time_deposit_amount':
-        this.errDepositAmount = errorMessage;
-        break;
-      case 'received_gross_interest_amount':
-        this.errGrossAmount = errorMessage;
-        break;
-      case 'interest_rate':
-        this.errInterestRate = errorMessage;
-        break;
-    }
-  };
-
-  /**
    * Update deposit history if the data are valid
    * @param {MouseEvent} event - a mouse click event
    */
@@ -132,34 +91,72 @@ class ComponentTable extends BaseElement {
     if (event.target.tagName !== 'BUTTON') return;
 
     const tr = event.currentTarget;
-    const account = tr.querySelector('[name=time_deposit_account]').value;
-    const startYear = +tr.querySelector('[name=interest_start_year]').value;
-    const depositAmount =
-      +tr.querySelector('[name=time_deposit_amount]').value;
+    const principalAmount = tr.querySelector('#time_deposit_amount');
     const grossAmount =
-      +tr.querySelector('[name=received_gross_interest_amount]').value;
-    const interestRate = +tr.querySelector('[name=interest_rate]').value;
+      tr.querySelector('#received_gross_interest_amount');
+    const interestRate = tr.querySelector('#interest_rate');
 
-    this.errDepositAmount = depositAmount ? '' :
-      ERROR_CODE[isNaN(depositAmount) ? '02' : '01'];
-    this.errGrossAmount = grossAmount ? '' :
-      ERROR_CODE[isNaN(grossAmount) ? '02' : '01'];
-    this.errInterestRate = interestRate ? '' :
-      ERROR_CODE[isNaN(interestRate) ? '02' : '01'];
+    const isPrincipalAmountValid = principalAmount.isValid;
+    const isGrossAmountValid = grossAmount.isValid;
+    const isInterestRateValid = interestRate.isValid;
     if (
-      this.errDepositAmount ||
-      this.errGrossAmount ||
-      this.errInterestRate
+      !isPrincipalAmountValid ||
+      !isGrossAmountValid ||
+      !isInterestRateValid
     ) {
       return;
     }
 
-    updateDepositHistory(account, {
-      interest_start_year: startYear,
-      time_deposit_amount: depositAmount,
-      received_gross_interest_amount: grossAmount,
-      interest_rate: interestRate,
-    });
+    updateDepositHistory(
+      tr.querySelector('#time_deposit_account').value,
+      {
+        interest_start_year:
+          +tr.querySelector('#interest_start_year').value,
+        time_deposit_amount: principalAmount.value,
+        received_gross_interest_amount: grossAmount.value,
+        interest_rate: interestRate.value,
+      },
+    );
+  }
+
+  /**
+   * Render deposit history to the table
+   * @return {TemplateResult} template result
+   */
+  renderData() {
+    const {
+      history,
+      month,
+      day,
+    } = this.deposit;
+
+    return html`
+      ${history?.length ?
+        history.map(({
+          interest_start_year: startYear,
+          time_deposit_amount: depositAmount,
+          received_gross_interest_amount: grossAmount,
+          interest_rate: interestRate,
+        }) => html`
+          <tr>
+            <td data-th="${INTEREST_START_DATE}">
+              ${new Date(Date.UTC(startYear, month - 1, day))
+                .toLocaleDateString()}
+            </td>
+            <td data-th="${INTEREST_END_DATE}">
+              ${new Date(Date.UTC(startYear + 1, month - 1, day))
+                .toLocaleDateString()}
+            </td>
+            <td data-th="${INTEREST_RATE} (%)">${interestRate}</td>
+            <td data-th="${PRINCIPAL_AMOUNT}">${format(depositAmount)}</td>
+            <td data-th="${GROSS_INTEREST_AMOUNT}">${format(grossAmount)}</td>
+            <td data-th="${AVAILABLE_BALANCE}">
+              ${format(depositAmount + grossAmount)}
+            </td>
+          </tr>
+        `) : null
+      }
+    `;
   }
 
   /**
@@ -193,64 +190,64 @@ class ComponentTable extends BaseElement {
     const startYear = isExpired ? latestHistory.interest_start_year + 1 : year;
     return html`
       <tr @click="${this.btnClickHandler}">
-        <td data-th="Interest Start Date">
+        <td data-th="${INTEREST_START_DATE}">
           <input
             type="hidden"
-            name="time_deposit_account"
+            id="time_deposit_account"
             value="${account}"
           >
           <input
             type="hidden"
-            name="interest_start_year"
+            id="interest_start_year"
             value="${startYear}"
           >
           ${new Date(Date.UTC(startYear, month - 1, day)).toLocaleDateString()}
         </td>
-        <td data-th="Interest End Date">
+        <td data-th="${INTEREST_END_DATE}">
           ${new Date(Date.UTC(startYear + 1, month - 1, day))
             .toLocaleDateString()
           }
         </td>
+        <td data-th="${INTEREST_RATE} (%)">
+          <component-input
+            id="interest_rate"
+            maxlength="7"
+            type="number"
+            required
+          >
+          </component-input>
+        </td>
         <td
-          data-th="Deposit Amount"
+          data-th="${PRINCIPAL_AMOUNT}"
           class="${this.errDepositAmount ? ' error' : ''}"
         >
           ${latestHistory ? html`
             <input
               type="hidden"
-              name="time_deposit_amount"
+              id="time_deposit_amount"
               value=${availableBalance}
             >
             ${format(availableBalance)}
           ` : html`
-            <input name="time_deposit_amount" type="text">
-            ${this.errDepositAmount ?
-              html`<div class="message">${this.errDepositAmount}</div>` :
-              null
-            }
+            <component-input
+              id="time_deposit_amount"
+              maxlength="9"
+              type="number"
+              required
+            >
+            </component-input>
           `}
         </td>
-        <td
-          data-th="Gross Interest Amount"
-          class="${this.errGrossAmount ? ' error' : ''}"
-        >
-          <input name="received_gross_interest_amount" type="text">
-          ${this.errGrossAmount ?
-            html`<div class="message">${this.errGrossAmount}</div>` :
-            null
-          }
+        <td data-th="${GROSS_INTEREST_AMOUNT}">
+          <component-input
+            id="received_gross_interest_amount"
+            maxlength="9"
+            type="number"
+            required
+          >
+          </component-input>
         </td>
-        <td
-          data-th="Interest Rate (%)"
-          class="${this.errInterestRate ? ' error' : ''}"
-        >
-          <input name="interest_rate" type="text">
-          ${this.errInterestRate ?
-            html`<div class="message">${this.errInterestRate}</div>` :
-            null
-          }
-        </td>
-        <td data-th="Available Balance">
+        <td data-th="${AVAILABLE_BALANCE}">
           <button>Add</button>
         </td>
       </tr>
@@ -262,46 +259,16 @@ class ComponentTable extends BaseElement {
    * @return {TemplateResult} template result
    */
   render() {
-    const {
-      history,
-      month,
-      day,
-    } = this.deposit;
-
     return html`<table>
       <tr>
-        <th>Interest Start Date</th>
-        <th>Interest End Date</th>
-        <th>Amount</th>
-        <th>Gross Interest Amount</th>
-        <th>Interest Rate (%)</th>
-        <th>Available Balance</th>
+        <th>${INTEREST_START_DATE}</th>
+        <th>${INTEREST_END_DATE}</th>
+        <th>${INTEREST_RATE} (%)</th>
+        <th>${PRINCIPAL_AMOUNT}</th>
+        <th>${GROSS_INTEREST_AMOUNT}</th>
+        <th>${AVAILABLE_BALANCE}</th>
       </tr>
-      ${history?.length ?
-        history.map(({
-          interest_start_year: startYear,
-          time_deposit_amount: depositAmount,
-          received_gross_interest_amount: grossAmount,
-          interest_rate: interestRate,
-        }) => {
-          return html`<tr>
-            <td data-th="Interest Start Date">
-              ${new Date(Date.UTC(startYear, month - 1, day))
-                .toLocaleDateString()}
-            </td>
-            <td data-th="Interest End Date">
-              ${new Date(Date.UTC(startYear + 1, month - 1, day))
-                .toLocaleDateString()}
-            </td>
-            <td data-th="Amount">${format(depositAmount)}</td>
-            <td data-th="Gross Interest Amount">${format(grossAmount)}</td>
-            <td data-th="Interest Rate (%)">${interestRate}</td>
-            <td data-th="Available Balance">
-              ${format(depositAmount + grossAmount)}
-            </td>
-          </tr>`;
-        }) : null
-      }
+      ${this.renderData()}
       ${this.renderInputRow()}
     </table>`;
   }

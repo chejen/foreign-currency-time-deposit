@@ -52,12 +52,3 @@ label[required]::before {
 .error {
   color: var(--color-red);
 }
-.error input {
-  border-color: var(--color-red);
-}
-.error .message {
-  font-size: 0.8rem;
-  color: var(--color-red);
-  text-align: right;
-  padding-right: 8px;
-}
