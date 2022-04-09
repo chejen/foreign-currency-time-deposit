@@ -1,11 +1,7 @@
 import { css, html } from 'lit';
 import BaseElement from './base';
 import { createDepositAccount } from './actions';
-
-const ERROR_CODE = Object.freeze({
-  '01': 'This field is required.',
-  '02': 'This field must be a number.',
-});
+import { ERROR_CODE } from './constants';
 
 /** Custom `component-form` component */
 class ComponentForm extends BaseElement {
@@ -23,15 +19,6 @@ class ComponentForm extends BaseElement {
     .input-field input,
     .input-field select {
       flex: 1;
-    }
-    .error input {
-      border-color: var(--color-red);
-    }
-    .error .message {
-      font-size: 0.8rem;
-      color: var(--color-red);
-      text-align: right;
-      padding-right: 8px;
     }
 
     #btn-add {

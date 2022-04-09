@@ -67,6 +67,7 @@ class TimeDeposit extends BaseElement {
    */
   handleEvent = (event) => {
     const { success, type, result } = event.detail;
+    let message;
     this.deposits = result;
     switch (type) {
       case 'getDeposits':
@@ -76,18 +77,24 @@ class TimeDeposit extends BaseElement {
             type: 'error',
           },
         }));
-        break;
+        return;
       case 'createDepositAccount':
-        window.dispatchEvent(new CustomEvent('toastshow', {
-          detail: {
-            message: success ?
-              'Successfully add a deposit account.':
-              'Failed to add a deposit account.',
-            type: success ? 'success' : 'error',
-          },
-        }));
+        message = success ?
+          'Successfully add a deposit account.' :
+          'Failed to add a deposit account.';
+        break;
+      case 'updateDepositHistory':
+        message = success ?
+          'Successfully update deposit history.' :
+          'Failed to update deposit history.';
         break;
     }
+    window.dispatchEvent(new CustomEvent('toastshow', {
+      detail: {
+        message,
+        type: success ? 'success' : 'error',
+      },
+    }));
   };
 
   /**

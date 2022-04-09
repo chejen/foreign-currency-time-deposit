@@ -3,8 +3,11 @@ import {
   getFirestore,
   collection,
   getDocs,
+  getDoc,
   doc,
   setDoc,
+  updateDoc,
+  arrayUnion,
 } from 'firebase/firestore/lite';
 
 let _firebaseConfig;
@@ -28,6 +31,35 @@ try {
 }
 
 export const initializationError = _initializationError;
+
+
+/**
+ * Get the deposit index from an array
+ * @param {string} timeDepositAccount Account No.
+ * @return {number} an array index of a deposit
+ */
+function _getDepositIndex(timeDepositAccount) {
+  return _depositList.map(
+    (el) => el.time_deposit_account,
+  ).indexOf(timeDepositAccount);
+}
+
+
+/**
+ * Get one deposit by its account no
+ * @param {string} timeDepositAccount Account No.
+ * @return {Promise} Promise with deposit data or null
+ */
+async function _getDeposit(timeDepositAccount) {
+  const depositRef = doc(_db, _collectionId, timeDepositAccount);
+  const depositSnapshot = await getDoc(depositRef);
+  if (depositSnapshot.exists()) {
+    const deposit = depositSnapshot.data();
+    deposit.time_deposit_account = timeDepositAccount;
+    return deposit;
+  }
+  return null;
+}
 
 /**
  * Get deposit list
@@ -87,6 +119,49 @@ export async function createDepositAccount(timeDepositAccount, data) {
       detail: {
         success,
         type: 'createDepositAccount',
+        result: _depositList,
+      },
+    }));
+  }
+}
+
+/**
+ * Update deposit history to a specific account
+ * @param {string} timeDepositAccount Account No.
+ * @param {object} data New deposit record
+ * @return {Promise} Promise object with a boolean value.
+ */
+export async function updateDepositHistory(timeDepositAccount, data) {
+  let success = false;
+  try {
+    const depositRef = doc(_db, _collectionId, timeDepositAccount);
+    await updateDoc(depositRef, {
+      history: arrayUnion(data),
+    });
+    const index = _getDepositIndex(timeDepositAccount);
+    const deposit = await _getDeposit(timeDepositAccount);
+    if (deposit) {
+      _depositList = [
+        ..._depositList.slice(0, index),
+        deposit,
+        ..._depositList.slice(index + 1),
+      ];
+    } else {
+      _depositList = [
+        ..._depositList.slice(0, index),
+        ..._depositList.slice(index + 1),
+      ];
+    }
+    success = true;
+    return true;
+  } catch (err) {
+    console.error('Failed to updateDepositHistory.', err);
+    return false;
+  } finally {
+    window.dispatchEvent(new CustomEvent('depositlistchanged', {
+      detail: {
+        success,
+        type: 'updateDepositHistory',
         result: _depositList,
       },
     }));

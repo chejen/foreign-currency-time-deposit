@@ -1,10 +1,8 @@
 import { css, html } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import BaseElement from './base';
+import { format } from './utils';
 import './component-table';
-
-const format = (num) =>
-  new Intl.NumberFormat(undefined, { maximumFractionDigits: 4 }).format(num);
 
 /** Custom `component-card` component */
 class ComponentCard extends BaseElement {
@@ -136,7 +134,6 @@ class ComponentCard extends BaseElement {
    * @return {TemplateResult} template result
    */
   render() {
-    const num = 290000;
     const arrowClasses = {
       arrow: true,
       rotate: !this.isTableCollapsed,
@@ -152,8 +149,14 @@ class ComponentCard extends BaseElement {
       cost,
       exchange_rate: exchangeRate,
       currency,
+      history,
     } = this.deposit;
-    const date = new Date(Date.UTC(year, month, day)).toLocaleDateString();
+    const date = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString();
+    const latestHistory = history?.[history.length - 1];
+    const availableBalance = latestHistory ?
+      (latestHistory.time_deposit_amount +
+      latestHistory.received_gross_interest_amount) :
+      0;
 
     return html`
       <div id="heading">
@@ -189,23 +192,32 @@ class ComponentCard extends BaseElement {
             in NTD equivalent
           </div>
         </div>
-        <div class="amount desktop-only">
-          <div class="field-name desktop-only">Available Balance:</div>
-          <div class="foreign-currency">
-            <span class="digits">100000</span> in USD
-          </div>
-          <div class="original-equivalent">
-            <div>
-              <span class="digits">
-                ${num.toLocaleString('en', { useGrouping: true })}
-              </span>
-              in NTD equivalent
+        ${latestHistory ? html`
+          <div class="amount desktop-only">
+            <div class="field-name desktop-only">Available Balance:</div>
+            <div class="foreign-currency">
+              <span class="digits">${format(availableBalance)}</span>
+              &nbsp;
+              in ${currency}
+            </div>
+            <div class="original-equivalent">
+              <div>
+                <span class="digits">
+                  ???
+                </span>
+                in NTD equivalent
+              </div>
             </div>
           </div>
-        </div>
-        <div class="pl">-50000</div>
+          <div class="pl">???</div>` : null
+        }
       </div>
-      <component-table class="${classMap(tableClasses)}"></component-table>
+
+      <component-table
+        class="${classMap(tableClasses)}"
+        .deposit="${this.deposit}"
+      >
+      </component-table>
     `;
   }
 }
