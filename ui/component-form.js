@@ -12,6 +12,10 @@ class ComponentForm extends BaseElement {
       align-items: center;
     }
 
+    component-input {
+      padding: 2px 5px;
+    }
+
     #btn-add {
       margin-left: 5px;
       display: flex;
@@ -20,14 +24,6 @@ class ComponentForm extends BaseElement {
     #btn-add span:first-child {
       font-size: 1.3rem;
       margin-right: 0.3rem;
-    }
-    #btn-add:hover {
-      background-color: var(--color-secondary);
-      color: var(--color-dark);
-      cursor: pointer;
-    }
-    #btn-add:active {
-      color: var(--color-primary);
     }
 
     @media only screen and (min-width: 1024px) {

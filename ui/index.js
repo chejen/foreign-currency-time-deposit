@@ -26,11 +26,15 @@ class TimeDeposit extends BaseElement {
       margin-top: 30px;
     }
     deposit-details {
+      overflow: hidden;
       flex: 1;
     }
     @media only screen and (max-width: 480px) {
       :host {
         align-items: unset;
+      }
+      deposit-overview {
+        max-height: 25%;
       }
     }
   `;

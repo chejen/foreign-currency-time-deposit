@@ -44,9 +44,6 @@ class DepositOverview extends BaseElement {
       }
     }
     @media only screen and (max-width: 480px) {
-      :host {
-        max-height: 25%;
-      }
       #slides {
         height: calc(100% - var(--indicator-height));
         flex-wrap: nowrap;

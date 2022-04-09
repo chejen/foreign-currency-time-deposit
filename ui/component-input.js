@@ -8,11 +8,16 @@ class ComponentInput extends BaseElement {
     .input-field {
       display: flex;
       align-items: center;
-      padding: 2px 5px;
+
     }
     .input-field input,
     .input-field select {
       flex: 1;
+    }
+    input {
+      width: 100%;
+      padding: 0 5px;
+      text-align: var(--text-align, left)
     }
     input.error {
       border-color: var(--color-red);

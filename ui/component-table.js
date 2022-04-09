@@ -38,14 +38,20 @@ class ComponentTable extends BaseElement {
         background-color: var(--color-light2);
       }
       table td {
-        display: block;
+        display: flex;
         text-align: left;
         padding: 3px;
+        align-items: center;
+        justify-content: space-between;
       }
       table td::before {
         content: attr(data-th);
-        display: inline-block;
-        width: 50%;
+        flex: 3;
+      }
+      table component-input {
+        --text-align: right;
+        padding: 1px 0;
+        flex: 2;
       }
     }
     @media only screen and (max-width: 480px) {
@@ -147,8 +153,8 @@ class ComponentTable extends BaseElement {
               ${new Date(Date.UTC(startYear + 1, month - 1, day))
                 .toLocaleDateString()}
             </td>
-            <td data-th="${INTEREST_RATE} (%)">${interestRate}</td>
             <td data-th="${PRINCIPAL_AMOUNT}">${format(depositAmount)}</td>
+            <td data-th="${INTEREST_RATE} (%)">${interestRate}</td>
             <td data-th="${GROSS_INTEREST_AMOUNT}">${format(grossAmount)}</td>
             <td data-th="${AVAILABLE_BALANCE}">
               ${format(depositAmount + grossAmount)}
@@ -208,15 +214,6 @@ class ComponentTable extends BaseElement {
             .toLocaleDateString()
           }
         </td>
-        <td data-th="${INTEREST_RATE} (%)">
-          <component-input
-            id="interest_rate"
-            maxlength="7"
-            type="number"
-            required
-          >
-          </component-input>
-        </td>
         <td
           data-th="${PRINCIPAL_AMOUNT}"
           class="${this.errDepositAmount ? ' error' : ''}"
@@ -238,6 +235,15 @@ class ComponentTable extends BaseElement {
             </component-input>
           `}
         </td>
+        <td data-th="${INTEREST_RATE} (%)">
+          <component-input
+            id="interest_rate"
+            maxlength="7"
+            type="number"
+            required
+          >
+          </component-input>
+        </td>
         <td data-th="${GROSS_INTEREST_AMOUNT}">
           <component-input
             id="received_gross_interest_amount"
@@ -247,7 +253,7 @@ class ComponentTable extends BaseElement {
           >
           </component-input>
         </td>
-        <td data-th="${AVAILABLE_BALANCE}">
+        <td data-th="">
           <button>Add</button>
         </td>
       </tr>
@@ -263,10 +269,10 @@ class ComponentTable extends BaseElement {
       <tr>
         <th>${INTEREST_START_DATE}</th>
         <th>${INTEREST_END_DATE}</th>
-        <th>${INTEREST_RATE} (%)</th>
         <th>${PRINCIPAL_AMOUNT}</th>
+        <th>${INTEREST_RATE} (%)</th>
         <th>${GROSS_INTEREST_AMOUNT}</th>
-        <th>${AVAILABLE_BALANCE}</th>
+        <th>${this.deposit.history?.length ? AVAILABLE_BALANCE : ''}</th>
       </tr>
       ${this.renderData()}
       ${this.renderInputRow()}

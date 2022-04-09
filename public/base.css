@@ -44,6 +44,14 @@ button {
   color: white;
   background-color: var(--color-primary);
 }
+button:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-dark);
+  cursor: pointer;
+}
+button:active {
+  color: var(--color-primary);
+}
 label[required]::before {
   content: '* ';
   color: var(--color-red);

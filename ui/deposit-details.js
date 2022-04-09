@@ -9,7 +9,6 @@ class DepositDetails extends BaseElement {
   static styles = css`
     :host {
       margin: 5px;
-      height: 100%;
       display: flex;
       flex-direction: column;
     }
