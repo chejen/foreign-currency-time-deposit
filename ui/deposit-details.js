@@ -86,7 +86,7 @@ class DepositDetails extends BaseElement {
     }
     @media only screen and (min-width: 481px) {
       #cards component-card {
-        margin: 5px 0 35px;
+        margin: 0 0 25px;
       }
     }
     @media only screen and (max-width: 480px) {

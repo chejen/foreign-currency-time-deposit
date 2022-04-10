@@ -35,7 +35,7 @@ class TimeDeposit extends BaseElement {
         align-items: unset;
       }
       deposit-overview {
-        max-height: 25%;
+        max-height: 30%;
       }
     }
   `;
@@ -118,7 +118,7 @@ class TimeDeposit extends BaseElement {
     return initializationError ?
       html`<div class="error message">${initializationError}</div>` :
       html`
-        <deposit-overview></deposit-overview>
+        <deposit-overview .deposits="${this.deposits}"></deposit-overview>
         <deposit-details .deposits="${this.deposits}"></deposit-details>
       `;
   }

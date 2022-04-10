@@ -16,7 +16,7 @@ class ComponentCard extends BaseElement {
       display: flex;
       justify-content: space-between;
       color: var(--color-light1);
-      padding: 5px 0;
+      padding: 0 0 5px;
     }
     .currency {
       color: var(--color-primary);
@@ -175,7 +175,7 @@ class ComponentCard extends BaseElement {
             <span class="field-name">Cost:</span>
             <span class="field-value">${format(cost, 2)}</span>
             <span class="sub">in NTD,</span>
-            <span class="field-name">exchange rate:</span>
+            <span class="field-name">Exchange Rate:</span>
             <span class="field-value">${format(exchangeRate)}</span>
           </div>
           ${latestHistory ? html`

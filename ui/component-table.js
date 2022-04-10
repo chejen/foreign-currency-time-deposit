@@ -21,8 +21,8 @@ class ComponentTable extends BaseElement {
     }
     table th {
       height: 35px;
-      background-color: var(--color-primary);
-      color: white;
+      background-color: var(--color-dark);
+      color: wheat;
     }
     table tr:nth-child(odd) {
       background-color: lightgray;
@@ -37,6 +37,9 @@ class ComponentTable extends BaseElement {
       }
       table th {
         display: none;
+      }
+      table tr:nth-child(odd) {
+        background-color: var(--color-light2);
       }
       table td {
         display: flex;
