@@ -18,10 +18,14 @@ class ComponentTable extends BaseElement {
   static styles = css`
     table {
       width: 100%;
-      background-color: var(--color-light2);
     }
-    table tr:nth-child(even) {
-      background-color: white;
+    table th {
+      height: 35px;
+      background-color: var(--color-primary);
+      color: white;
+    }
+    table tr:nth-child(odd) {
+      background-color: lightgray;
     }
     table td {
       text-align: center;
@@ -33,9 +37,6 @@ class ComponentTable extends BaseElement {
       }
       table th {
         display: none;
-      }
-      table tr:nth-child(even) {
-        background-color: var(--color-light2);
       }
       table td {
         display: flex;
@@ -56,17 +57,15 @@ class ComponentTable extends BaseElement {
     }
     @media only screen and (max-width: 480px) {
       :host {
-        width: 85%;
-        margin: 0 auto 10px;
+        margin: 0 0 0 30px;
       }
       table {
         border-collapse: collapse;
       }
-      table tr:nth-child(even) {
-        background-color: unset;
-      }
       table tr:not(:first-child):not(:last-child) {
         border-bottom: 1px solid var(--color-light1);
+        padding: 3px 0;
+        display: block;
       }
       table td {
         padding: 1px 5px;
@@ -180,7 +179,11 @@ class ComponentTable extends BaseElement {
     const latestHistory = history?.[history.length - 1];
     const isExpired = latestHistory ?
       (
-        Date.UTC(latestHistory.interest_start_year + 1, month - 1, day) <
+        // (endYr = startYr + 1)
+        // There would be a new record
+        // if the difference between today and the next yr of the endYr
+        // is over 1 yr
+        Date.UTC(latestHistory.interest_start_year + 2, month - 1, day) <
         Date.now()
       ) :
       null;

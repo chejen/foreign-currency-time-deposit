@@ -57,6 +57,9 @@ label[required]::before {
   color: var(--color-red);
 }
 
-.error {
+.error, .profit {
   color: var(--color-red);
+}
+.success, .loss {
+  color: var(--color-green);
 }

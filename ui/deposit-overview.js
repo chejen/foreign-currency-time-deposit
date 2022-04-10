@@ -29,7 +29,7 @@ class DepositOverview extends BaseElement {
       margin: 5px;
       padding: 8px;
       overflow: auto;
-      background-color: var(--color-darkblue);
+      background-color: var(--color-primary);
       color: white;
       border-radius: 3px;
     }

@@ -12,6 +12,7 @@ import {
 class TimeDeposit extends BaseElement {
   static styles = css`
     :host {
+      width: 100%;
       max-width: 1280px;
       height: 100%;
       overflow: hidden;

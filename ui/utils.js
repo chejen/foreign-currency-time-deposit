@@ -2,12 +2,13 @@
 /**
  * Format the number
  * @param {number|string} num The number to be formatted
+ * @param {number} digit Maximum faction digits
  * @return {string} Formatted number
  */
-export function format(num) {
+export function format(num, digit) {
   return new Intl.NumberFormat(
     undefined,
-    { maximumFractionDigits: 4 },
+    { maximumFractionDigits: digit || 4 },
   ).format(num);
 }
 

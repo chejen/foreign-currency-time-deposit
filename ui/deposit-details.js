@@ -8,7 +8,7 @@ import './component-card';
 class DepositDetails extends BaseElement {
   static styles = css`
     :host {
-      margin: 5px;
+      margin: 5px 5px 10px;
       display: flex;
       flex-direction: column;
     }
@@ -41,6 +41,9 @@ class DepositDetails extends BaseElement {
     }
 
     @media only screen and (max-width: 768px) {
+      :host {
+        width: 100%;
+      }
       component-form {
         display: none;
         opacity: 0;
@@ -77,15 +80,18 @@ class DepositDetails extends BaseElement {
       .symbol-button.active {
         transform: rotate(315deg);
       }
+      #cards component-card:not(:last-child) {
+        border-bottom: 1px solid var(--color-secondary);
+      }
     }
     @media only screen and (min-width: 481px) {
       #cards component-card {
-        margin: 25px 0;
+        margin: 5px 0 35px;
       }
     }
     @media only screen and (max-width: 480px) {
-      #cards component-card:not(:last-child) {
-        border-bottom: 1px solid var(--color-secondary);
+      :host {
+        width: unset;
       }
     }
   `;

@@ -16,46 +16,53 @@ class ComponentCard extends BaseElement {
       display: flex;
       justify-content: space-between;
       color: var(--color-light1);
-      padding: 3px 0 8px;
+      padding: 5px 0;
+    }
+    .currency {
+      color: var(--color-primary);
+      margin-left: -3px;
+      padding: 3px;
+      border-radius: 2px;
+      border: 1px solid var(--color-primary);
+      font-size: 0.7rem;
     }
     #content {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
     }
-    .digits {
-      font-weight: 600;
-    }
     .arrow {
       display: none;
     }
-    .amount {
-      display: flex;
-      justify-content: flex-start;
-    }
-    .field-name, .foreign-currency {
-      padding-right: 10px;
-    }
-    .original-equivalent {
+    .details {
+      flex: 1;
       color: var(--color-light1);
-      margin-right: 30px;
+    }
+    .field-name {
+      color: var(--color-dark);
+    }
+    .field-value {
+      color: var(--color-dark);
+      font-weight: 600;
+    }
+    .sub {
+      font-size: 0.7rem;
+    }
+    .amount {
+      padding-top: 5px;
+      display: flex;
+      justify-content: space-between;
     }
     .pl {
       display: flex;
-      color: red;
       font-weight: 600;
       align-items: flex-end;
     }
     component-table {
-      margin-top: 1rem;
+      margin-top: 10px;
       display: block;
     }
 
-    @media only screen and (min-width: 481px) and (max-width: 768px) {
-      .exchange-rate {
-        display: none;
-      }
-    }
     @media only screen and (max-width: 480px) {
       :host {
         font-size: 0.8rem;
@@ -74,21 +81,6 @@ class ComponentCard extends BaseElement {
       }
       .arrow.rotate {
         transform: rotate(90deg);
-      }
-      .amount {
-        flex: 1;
-        padding: 3px 0;
-        flex-direction: column;
-      }
-      .foreign-currency {
-        font-size: 0.9rem;
-        padding: 0 0 3px;
-      }
-      .exchange-rate {
-        font-size: 0.8rem;
-      }
-      .original-equivalent {
-        margin-right: unset;
       }
       .pl {
         padding-bottom: 3px;
@@ -157,14 +149,17 @@ class ComponentCard extends BaseElement {
       (latestHistory.time_deposit_amount +
       latestHistory.received_gross_interest_amount) :
       0;
+    const balanceInOriginalCurrency =
+      (this.exchangeRates?.[currency] || 0) * availableBalance;
 
     return html`
       <div id="heading">
-        <div id="date">
+        <div>
+          <span class="currency"><b>${currency}</b></span>
           <span class="desktop-only">Deposit Date: </span>
           ${date}
         </div>
-        <div id="account">
+        <div>
           <span class="desktop-only">Account: </span>${account}
         </div>
       </div>
@@ -175,42 +170,31 @@ class ComponentCard extends BaseElement {
         >
           &gt;
         </div>
-        <div class="amount">
-          <div class="field-name desktop-only">Deposit Amount:</div>
-          <div class="foreign-currency">
-            <span class="digits">${format(cost / exchangeRate)}</span>
-            &nbsp;
-            in ${currency}
-            <span class="exchange-rate">
-              (exchange rate: ${format(exchangeRate)})
-            </span>
+        <div class="details">
+          <div>
+            <span class="field-name">Cost:</span>
+            <span class="field-value">${format(cost, 2)}</span>
+            <span class="sub">in NTD,</span>
+            <span class="field-name">exchange rate:</span>
+            <span class="field-value">${format(exchangeRate)}</span>
           </div>
-          <div class="original-equivalent">
-            <span class="digits">
-              ${format(cost)}
-            </span>
-            in NTD equivalent
-          </div>
-        </div>
-        ${latestHistory ? html`
-          <div class="amount desktop-only">
-            <div class="field-name desktop-only">Available Balance:</div>
-            <div class="foreign-currency">
-              <span class="digits">${format(availableBalance)}</span>
-              &nbsp;
-              in ${currency}
-            </div>
-            <div class="original-equivalent">
+          ${latestHistory ? html`
+            <div class="amount">
               <div>
-                <span class="digits">
-                  ???
+                <span class="field-name">Available Balance:</span>
+                <span class="field-value">
+                  ${format(balanceInOriginalCurrency, 2)}
                 </span>
-                in NTD equivalent
+                <span class="sub">in NTD,</span>
               </div>
+              <div class="pl ${
+                  balanceInOriginalCurrency > cost ? 'profit' : 'loss'
+                }"
+              >${format(balanceInOriginalCurrency - cost, 2)}</div>
             </div>
-          </div>
-          <div class="pl">???</div>` : null
-        }
+            ` : null
+          }
+        </div>
       </div>
 
       <component-table
