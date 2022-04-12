@@ -170,11 +170,15 @@ class DepositDetails extends BaseElement {
         </div>
       </div>
       <div id="cards">
-        ${this.deposits.length ?
+        ${this.deposits?.length ?
           null :
-          html`<div class="no-data">No time deposit records</div>`
+          html`<div class="no-data">${
+            this.deposits ?
+              html`No time deposit records` :
+              html`<img src="./loading.gif" width="96px" height="96px" />`
+          }</div>`
         }
-        ${this.deposits.map((deposit) => (
+        ${this.deposits?.map((deposit) => (
           html`<component-card .deposit="${deposit}"></component-card>`
         ))}
       </div>

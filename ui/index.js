@@ -52,7 +52,6 @@ class TimeDeposit extends BaseElement {
    */
   constructor() {
     super();
-    this.deposits = [];
   }
 
   /**
@@ -118,7 +117,11 @@ class TimeDeposit extends BaseElement {
     return initializationError ?
       html`<div class="error message">${initializationError}</div>` :
       html`
-        <deposit-overview .deposits="${this.deposits}"></deposit-overview>
+        <deposit-overview
+          .deposits="${this.deposits}"
+          .exchangeRates="${this.exchangeRates}"
+        >
+        </deposit-overview>
         <deposit-details .deposits="${this.deposits}"></deposit-details>
       `;
   }

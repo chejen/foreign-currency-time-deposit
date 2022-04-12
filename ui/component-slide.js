@@ -48,6 +48,10 @@ class ComponentSlide extends BaseElement {
       type: Boolean,
       attribute: 'isprofit',
     },
+    isLoading: {
+      type: Boolean,
+      attribute: 'isloading',
+    },
   };
 
   /**
@@ -60,6 +64,7 @@ class ComponentSlide extends BaseElement {
     this.bottomline = '';
     this.pl = '';
     this.isProfit = false;
+    this.isloading = false;
   }
 
   /**
@@ -75,17 +80,22 @@ class ComponentSlide extends BaseElement {
           null
         }
       </div>
-      <slot></slot>
-      <div class="bottom-line">
-        ${this.bottomline}
-        ${this.pl ?
-          html`<span class="${this.isProfit ? 'profit' : 'loss'}">
-              (${this.pl})
-            </span>
-          ` :
-          null
-        }
-      </div>
+      ${this.isLoading ?
+        html`<img src="./loading.gif" width="64px" height="64px" />` :
+        html`
+          <slot></slot>
+          <div class="bottom-line">
+            ${this.bottomline}
+            ${this.pl ?
+              html`<span class="${this.isProfit ? 'profit' : 'loss'}">
+                  (${this.pl})
+                </span>
+              ` :
+              null
+            }
+          </div>
+        `
+      }
     `;
   }
 }

@@ -91,11 +91,9 @@ class DepositOverview extends BaseElement {
   static properties = {
     deposits: {
       type: Array,
-      attribute: false,
     },
     exchangeRates: {
       type: Array,
-      attribute: false,
     },
     slideCount: {
       type: Number,
@@ -114,8 +112,6 @@ class DepositOverview extends BaseElement {
     super();
     this.slideCount = 0;
     this.slide = 0;
-    this.deposits = [];
-    this.exchangeRates = {};
   }
 
   /**
@@ -154,7 +150,7 @@ class DepositOverview extends BaseElement {
     const currentValues = {};
     let totalCosts = 0;
     let totalCurrentValues = 0;
-    this.deposits.forEach(({ currency, cost, history }) => {
+    this.deposits?.forEach(({ currency, cost, history }) => {
       const latestHistory = history?.[history?.length - 1];
       costs[currency] = (costs[currency] || 0) + cost;
       totalCosts += cost;
@@ -165,9 +161,13 @@ class DepositOverview extends BaseElement {
       }
     });
     Object.keys(currentValues).forEach((key) => {
-      currentValues[key] *= this.exchangeRates[key];
+      currentValues[key] *= this.exchangeRates?.[key];
       totalCurrentValues += currentValues[key];
     });
+    const pl = this.deposits?.length && this.exchangeRates ?
+      format(totalCurrentValues - totalCosts, 1) + ', ' +
+      format((totalCurrentValues - totalCosts) / totalCosts * 100, 1) + '%' :
+      '';
 
     return html`
       <div id="slides" @scroll="${this.scrollHandler}">
@@ -175,15 +175,16 @@ class DepositOverview extends BaseElement {
           <component-slide
             title="Total ROI"
             subtitle="in NTD Equivalent"
-            bottomline="${format(totalCurrentValues, 1)}"
-            pl="
-            ${format(totalCurrentValues - totalCosts, 1)},
-            ${format((totalCurrentValues - totalCosts) / totalCosts * 100, 1)}%
-            "
+            bottomline="${this.exchangeRates ?
+              format(totalCurrentValues, 1) :
+              ''
+            }"
+            pl="${pl}"
             ?isprofit="${totalCurrentValues - totalCosts > 0}"
+            ?isloading="${!this.exchangeRates || !this.deposits}"
           >
             <ul>
-            ${Object.keys(currentValues)
+            ${this.exchangeRates && this.deposits ? Object.keys(currentValues)
               .sort().map((key) => {
                 const pl = currentValues[key] - costs[key];
                 return html`<li>(${key}) ${format(currentValues[key], 1)}
@@ -192,7 +193,8 @@ class DepositOverview extends BaseElement {
                     (${format(pl / costs[key] * 100, 1)}%)
                   </span>
                 </li>`;
-              })
+              }) :
+              null
             }
             </ul>
           </component-slide>
@@ -203,12 +205,13 @@ class DepositOverview extends BaseElement {
             title="Cost"
             bottomline="${format(totalCosts)}"
             subtitle="in NTD Equivalent"
+            ?isloading="${!this.deposits}"
           >
             <ul>
-            ${Object.keys(costs)
+            ${this.deposits ? Object.keys(costs)
               .sort().map((key) =>
                 html`<li>(${key}) ${format(costs[key])}</li>`,
-            )}
+            ) : null}
             </ul>
           </component-slide>
         </div>
@@ -216,13 +219,14 @@ class DepositOverview extends BaseElement {
         <div class="flex-item">
           <component-slide
             title="Exchange Rates"
-            subtitle="${this.exchangeRates.time}"
+            subtitle="${this.exchangeRates?.time}"
+            ?isloading="${!this.exchangeRates}"
           >
             <ul>
-            ${Object.keys(this.exchangeRates)
-              .filter((key) => key !== 'time').sort().map((key) =>
-                html`<li>(${key}) ${this.exchangeRates[key]}</li>`,
-            )}
+              ${this.exchangeRates ? Object.keys(this.exchangeRates)
+                .filter((key) => key !== 'time').sort().map((key) =>
+                  html`<li>(${key}) ${this.exchangeRates[key]}</li>`,
+              ) : null}
             </ul>
           </component-slide>
         </div>
