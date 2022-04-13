@@ -6,6 +6,7 @@ import './deposit-details';
 import {
   initializationError,
   getDeposits,
+  getExchangeRates,
 } from './actions';
 
 /** Custom `time-deposit` component */
@@ -45,14 +46,11 @@ class TimeDeposit extends BaseElement {
       type: Array,
       attribute: false,
     },
+    exchangeRates: {
+      type: Object,
+      attribute: false,
+    },
   };
-
-  /**
-   * Create a shadow DOM for <time-deposit>.
-   */
-  constructor() {
-    super();
-  }
 
   /**
    * Invoked when the <time-deposit> is appended.
@@ -62,6 +60,10 @@ class TimeDeposit extends BaseElement {
     window.addEventListener('depositlistchanged', this);
     if (!initializationError) {
       getDeposits();
+      getExchangeRates().then(({ result, success }) => {
+        this.exchangeRates = result;
+        !success && this.showToast('Failed to load exchange rates.', 'error');
+      });
     }
   }
 
@@ -75,12 +77,7 @@ class TimeDeposit extends BaseElement {
     this.deposits = result;
     switch (type) {
       case 'getDeposits':
-        !success && window.dispatchEvent(new CustomEvent('toastshow', {
-          detail: {
-            message: 'Failed to load deposit list.',
-            type: 'error',
-          },
-        }));
+        !success && this.showToast('Failed to load deposit list.', 'error');
         return;
       case 'createDepositAccount':
         message = success ?
@@ -93,13 +90,24 @@ class TimeDeposit extends BaseElement {
           'Failed to update deposit history.';
         break;
     }
-    window.dispatchEvent(new CustomEvent('toastshow', {
-      detail: {
-        message,
-        type: success ? 'success' : 'error',
-      },
-    }));
+    this.showToast(message, success ? 'success' : 'error');
   };
+
+  /**
+   * Reveal a toast.
+   * @param {string} message The message expected to be displayed
+   * @param {string} type The toast type
+   */
+  showToast(message, type) {
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(new CustomEvent('toastshow', {
+        detail: {
+          message,
+          type,
+        },
+      }));
+    });
+  }
 
   /**
    * Called when the <time-deposit> is removed.

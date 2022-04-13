@@ -15,6 +15,7 @@ let _app;
 let _db;
 let _collectionId;
 let _depositList = [];
+let _exchangeRates = {};
 let _initializationError;
 
 try {
@@ -165,5 +166,28 @@ export async function updateDepositHistory(timeDepositAccount, data) {
         result: _depositList,
       },
     }));
+  }
+}
+
+/**
+ * Get exchange rates
+ * @return {Promise} Promise with an object value.
+ */
+export async function getExchangeRates() {
+  try {
+    const response = await fetch('/api/exchange-rate')
+      .then((res) => res.json());
+    _exchangeRates = response;
+    return {
+      success: true,
+      result: _exchangeRates,
+    };
+  } catch (err) {
+    console.error('Failed to getExchangeRates.', err);
+    _exchangeRates = {};
+    return {
+      success: false,
+      result: _exchangeRates,
+    };
   }
 }
