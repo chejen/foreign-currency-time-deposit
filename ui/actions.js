@@ -45,6 +45,34 @@ function _getDepositIndex(timeDepositAccount) {
   ).indexOf(timeDepositAccount);
 }
 
+/**
+ * Show profit or loss by calculating the revenues & costs
+ */
+function _calculateROI() {
+  if (_depositList.length && Object.keys(_exchangeRates).length) {
+    _depositList = _depositList.map((deposit) => {
+      const { history, currency, cost } = deposit;
+      const latestHistory = history?.[history.length - 1];
+      const availableBalance = latestHistory ?
+        (latestHistory.time_deposit_amount +
+        latestHistory.received_gross_interest_amount) :
+        0;
+      const revenue = availableBalance * (_exchangeRates[currency] || 0);
+      return {
+        ...deposit,
+        revenue,
+        pl: revenue - cost,
+      };
+    });
+    window.dispatchEvent(new CustomEvent('depositlistchanged', {
+      detail: {
+        success: true,
+        type: 'calculateROI',
+        result: _depositList,
+      },
+    }));
+  }
+}
 
 /**
  * Get one deposit by its account no
@@ -82,13 +110,17 @@ export async function getDeposits() {
     _depositList = [];
     return false;
   } finally {
-    window.dispatchEvent(new CustomEvent('depositlistchanged', {
-      detail: {
-        success,
-        type: 'getDeposits',
-        result: _depositList,
-      },
-    }));
+    if (_depositList.length && Object.keys(_exchangeRates).length) {
+      _calculateROI();
+    } else {
+      window.dispatchEvent(new CustomEvent('depositlistchanged', {
+        detail: {
+          success,
+          type: 'getDeposits',
+          result: _depositList,
+        },
+      }));
+    }
   }
 }
 
@@ -170,14 +202,63 @@ export async function updateDepositHistory(timeDepositAccount, data) {
 }
 
 /**
+ * Sort deposit list by given field and options
+ * @param {string} by The field used to sort data
+ * @param {object} options Advanced sorting, such as "order by"
+ */
+export function sortDepositList(by, options) {
+  const field = {
+    account: 'time_deposit_account',
+    pl: 'pl',
+  };
+  let dup = [..._depositList];
+  switch (by) {
+    case 'currency':
+      dup.sort((a, b) => {
+        if (a.currency === b.currency) {
+          return a.time_deposit_account - b.time_deposit_account;
+        }
+        return a.currency.localeCompare(b.currency);
+      });
+      break;
+    case 'month':
+      dup.sort((a, b) => {
+        if (a.month === b.month) {
+          return a.day - b.day;
+        }
+        return a.month - b.month;
+      });
+      if (options?.from === 'current') {
+        const currentMonth = new Date().getMonth();
+        const index = dup.findIndex((d) => d.month === currentMonth + 1);
+        dup = [
+          ...dup.slice(index),
+          ...dup.slice(0, index),
+        ];
+      }
+      break;
+    default:
+      dup.sort((a, b) => a[field[by]] - b[field[by]]);
+      break;
+  }
+
+  window.dispatchEvent(new CustomEvent('depositlistchanged', {
+    detail: {
+      success: true,
+      type: 'sortDepositList',
+      result: options?.orderby === 'desc' ? dup.reverse() : dup,
+    },
+  }));
+}
+
+/**
  * Get exchange rates
  * @return {Promise} Promise with an object value.
  */
 export async function getExchangeRates() {
   try {
-    const response = await fetch('/api/exchange-rate')
+    _exchangeRates = await fetch('/api/exchange-rate')
       .then((res) => res.json());
-    _exchangeRates = response;
     return {
       success: true,
       result: _exchangeRates,
@@ -189,5 +270,7 @@ export async function getExchangeRates() {
       success: false,
       result: _exchangeRates,
     };
+  } finally {
+    _calculateROI();
   }
 }

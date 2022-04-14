@@ -139,18 +139,14 @@ class ComponentCard extends BaseElement {
       month,
       day,
       cost,
+      revenue,
+      pl,
       exchange_rate: exchangeRate,
       currency,
       history,
     } = this.deposit;
     const date = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString();
     const latestHistory = history?.[history.length - 1];
-    const availableBalance = latestHistory ?
-      (latestHistory.time_deposit_amount +
-      latestHistory.received_gross_interest_amount) :
-      0;
-    const balanceInOriginalCurrency =
-      (this.exchangeRates?.[currency] || 0) * availableBalance;
 
     return html`
       <div id="heading">
@@ -183,14 +179,16 @@ class ComponentCard extends BaseElement {
               <div>
                 <span class="field-name">Available Balance:</span>
                 <span class="field-value">
-                  ${format(balanceInOriginalCurrency, 2)}
+                  ${format(revenue, 2)}
                 </span>
                 <span class="sub">in NTD,</span>
               </div>
-              <div class="pl ${
-                  balanceInOriginalCurrency > cost ? 'profit' : 'loss'
-                }"
-              >${format(balanceInOriginalCurrency - cost, 2)}</div>
+              <div class="pl ${pl > 0 ? 'profit' : 'loss'}">
+                ${format(pl, 2)}
+                <span class="desktop-only">
+                  &nbsp;
+                  (${format((pl / cost) * 100, 1)}%)</span>
+              </div>
             </div>
             ` : null
           }

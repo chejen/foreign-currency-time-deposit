@@ -89,6 +89,8 @@ class TimeDeposit extends BaseElement {
           'Successfully update deposit history.' :
           'Failed to update deposit history.';
         break;
+      default: // sortDepositList, calculateROI
+        return;
     }
     this.showToast(message, success ? 'success' : 'error');
   };

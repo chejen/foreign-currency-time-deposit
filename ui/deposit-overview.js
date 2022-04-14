@@ -147,26 +147,18 @@ class DepositOverview extends BaseElement {
    */
   render() {
     const costs = {};
-    const currentValues = {};
+    const revenues = {};
     let totalCosts = 0;
-    let totalCurrentValues = 0;
-    this.deposits?.forEach(({ currency, cost, history }) => {
-      const latestHistory = history?.[history?.length - 1];
+    let totalRevenues = 0;
+    this.deposits?.forEach(({ currency, cost, revenue }) => {
       costs[currency] = (costs[currency] || 0) + cost;
+      revenues[currency] = (revenues[currency] || 0) + revenue;
       totalCosts += cost;
-      if (latestHistory) {
-        const amount = latestHistory.time_deposit_amount +
-          latestHistory.received_gross_interest_amount;
-        currentValues[currency] = (currentValues[currency] || 0) + amount;
-      }
-    });
-    Object.keys(currentValues).forEach((key) => {
-      currentValues[key] *= this.exchangeRates?.[key];
-      totalCurrentValues += currentValues[key];
+      totalRevenues += revenue;
     });
     const pl = this.deposits?.length && this.exchangeRates ?
-      format(totalCurrentValues - totalCosts, 1) + ', ' +
-      format((totalCurrentValues - totalCosts) / totalCosts * 100, 1) + '%' :
+      format(totalRevenues - totalCosts, 1) + ', ' +
+      format((totalRevenues - totalCosts) / totalCosts * 100, 1) + '%' :
       '';
 
     return html`
@@ -176,18 +168,18 @@ class DepositOverview extends BaseElement {
             title="Total ROI"
             subtitle="in NTD Equivalent"
             bottomline="${this.exchangeRates ?
-              format(totalCurrentValues, 1) :
+              format(totalRevenues, 1) :
               ''
             }"
             pl="${pl}"
-            ?isprofit="${totalCurrentValues - totalCosts > 0}"
+            ?isprofit="${totalRevenues - totalCosts > 0}"
             ?isloading="${!this.exchangeRates || !this.deposits}"
           >
             <ul>
-            ${this.exchangeRates && this.deposits ? Object.keys(currentValues)
+            ${this.exchangeRates && this.deposits ? Object.keys(revenues)
               .sort().map((key) => {
-                const pl = currentValues[key] - costs[key];
-                return html`<li>(${key}) ${format(currentValues[key], 1)}
+                const pl = revenues[key] - costs[key];
+                return html`<li>(${key}) ${format(revenues[key], 1)}
                   <span class="${pl > 0 ? 'profit' : 'loss'}">
                     <b>${format(pl, 1)}</b>
                     (${format(pl / costs[key] * 100, 1)}%)

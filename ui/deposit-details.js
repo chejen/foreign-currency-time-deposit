@@ -1,5 +1,6 @@
 import { html, css } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
+import { sortDepositList } from './actions';
 import BaseElement from './base';
 import './component-form';
 import './component-card';
@@ -19,13 +20,13 @@ class DepositDetails extends BaseElement {
       padding: 15px 5px 10px;
     }
     #operations * {
-      color: var(--color-primary);
+      color: var(--color-darkblue);
     }
     .symbol-button {
       display: none;
     }
     #sorting {
-      border: 1px solid var(--color-primary);
+      border: 1px solid var(--color-darkblue);
     }
     #cards {
       flex: 1;
@@ -69,7 +70,7 @@ class DepositDetails extends BaseElement {
         display: block;
         font-size: 1.3rem;
         font-weight: 700;
-        border: 2px solid var(--color-primary);
+        border: 2px solid var(--color-darkblue);
         border-radius: 0.9rem;
         width: 1.6rem;
         height: 1.6rem;
@@ -128,7 +129,10 @@ class DepositDetails extends BaseElement {
    * @param {object} event - change event
    */
   selectChangeHandler(event) {
-    console.log(event.target.value);
+    const param = event.target.value.split('-');
+    sortDepositList(param[0], param.length > 1 ? {
+      [param[1]]: param[2],
+    } : undefined);
   }
 
   /**
@@ -157,13 +161,14 @@ class DepositDetails extends BaseElement {
         <div id="sorting-wrapper">
           <label for="sorting">Sort by</label>
           <select id="sorting" @change="${this.selectChangeHandler}">
-            <option value="account-asc">Deposit Account (ASC)</option>
-            <option value="account-desc">Deposit Account (DESC)</option>
-            <option value="pl-asc">Profit and Loss (ASC)</option>
-            <option value="account-desc">Profit and Loss (DESC)</option>
-            <option value="currency">Currency</option>
+            <option value="account">Deposit Account (ASC)</option>
+            <option value="account-orderby-desc">Deposit Account (DESC)</option>
+            <option value="pl">Profit and Loss (ASC)</option>
+            <option value="pl-orderby-desc">Profit and Loss (DESC)</option>
+            <option value="currency">Currency (ASC)</option>
+            <option value="currency-orderby-desc">Currency (DESC)</option>
             <option value="month">Month</option>
-            <option value="month-current">
+            <option value="month-from-current">
               Month (Starting from Current One)
             </option>
           </select>
