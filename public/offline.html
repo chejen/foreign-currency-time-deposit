@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1F3F66">
+    <title>Offline</title>
+    <style>
+      :root {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        color: #3E8EDE;
+      }
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 10vh 0 0;
+      }
+      body {
+        margin: 0;
+        padding: 10px;
+        text-align: center;
+      }
+      p {
+        color: #1F3F66;
+      }
+      .warn {
+        margin: 0 auto 10vh;
+        font-size: 60px;
+        font-weight: 700;
+        border: 5px solid #3E8EDE;
+        border-radius: 40px;
+        width: 80px;
+        height: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="warn">!</div>
+    <h2>Your device is now offline.</h2>
+    <p>Please check your data or Wi-Fi connection.</p>
+    <script>
+      window.addEventListener('online', () => {
+        window.location.reload();
+      });
+    </script>
+  </body>
+</html>

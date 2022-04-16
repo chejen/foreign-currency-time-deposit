@@ -1,4 +1,4 @@
-# Time Deposit
+# Foreign Currency Time Deposit
 A responsive and progressive web app built on top of Web Components.
 
 ## Technologies

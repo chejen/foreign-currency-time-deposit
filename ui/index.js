@@ -57,6 +57,11 @@ class TimeDeposit extends BaseElement {
    */
   connectedCallback() {
     super.connectedCallback();
+    window.addEventListener('load', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js');
+      }
+    }, { once: true });
     window.addEventListener('depositlistchanged', this);
     if (!initializationError) {
       getDeposits();

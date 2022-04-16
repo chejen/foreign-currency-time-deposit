@@ -1,0 +1,16 @@
+{
+  "short_name": "Time Deposit",
+  "name": "Foreign Currency Time Deposit",
+  "icons": [{
+    "src": "/deposit.png",
+    "type": "image/png",
+    "sizes": "512x512",
+    "purpose": "any maskable"
+  }],
+  "start_url": "/index.html",
+  "background_color": "#1F3F66",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#1F3F66",
+  "description": "Foreign Currency Time Deposit"
+}
