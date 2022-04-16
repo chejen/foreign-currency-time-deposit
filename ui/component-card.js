@@ -174,7 +174,7 @@ class ComponentCard extends BaseElement {
             <span class="field-name">Exchange Rate:</span>
             <span class="field-value">${format(exchangeRate)}</span>
           </div>
-          ${latestHistory ? html`
+          ${latestHistory && pl ? html`
             <div class="amount">
               <div>
                 <span class="field-name">Available Balance:</span>

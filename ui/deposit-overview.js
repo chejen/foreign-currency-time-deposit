@@ -146,6 +146,8 @@ class DepositOverview extends BaseElement {
    * @return {TemplateResult} template result
    */
   render() {
+    const isExchangeRatesAvailable =
+      Object.keys(this.exchangeRates || {}).length;
     const costs = {};
     const revenues = {};
     let totalCosts = 0;
@@ -156,7 +158,7 @@ class DepositOverview extends BaseElement {
       totalCosts += cost;
       totalRevenues += revenue;
     });
-    const pl = this.deposits?.length && this.exchangeRates ?
+    const pl = this.deposits?.length && isExchangeRatesAvailable ?
       format(totalRevenues - totalCosts, 1) + ', ' +
       format((totalRevenues - totalCosts) / totalCosts * 100, 1) + '%' :
       '';
@@ -167,7 +169,7 @@ class DepositOverview extends BaseElement {
           <component-slide
             title="Total ROI"
             subtitle="in NTD Equivalent"
-            bottomline="${this.exchangeRates ?
+            bottomline="${isExchangeRatesAvailable ?
               format(totalRevenues, 1) :
               ''
             }"
@@ -176,8 +178,8 @@ class DepositOverview extends BaseElement {
             ?isloading="${!this.exchangeRates || !this.deposits}"
           >
             <ul>
-            ${this.exchangeRates && this.deposits ? Object.keys(revenues)
-              .sort().map((key) => {
+            ${isExchangeRatesAvailable && this.deposits ?
+              Object.keys(revenues).sort().map((key) => {
                 const pl = revenues[key] - costs[key];
                 return html`<li>(${key}) ${format(revenues[key], 1)}
                   <span class="${pl > 0 ? 'profit' : 'loss'}">

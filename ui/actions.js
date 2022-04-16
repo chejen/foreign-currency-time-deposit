@@ -46,24 +46,37 @@ function _getDepositIndex(timeDepositAccount) {
 }
 
 /**
+ * Integrate calculated profit/loss into deposit
+ * @param {object} deposit Time deposit record
+ * @param {string} timeDepositAccount Account No.
+ * @return {object} The transformed deposit with revenue and pl
+ */
+function _withPL(deposit, timeDepositAccount) {
+  const { history, currency, cost } = deposit;
+  const latestHistory = history?.[history.length - 1];
+  const availableBalance = latestHistory ?
+    (latestHistory.time_deposit_amount +
+    latestHistory.received_gross_interest_amount) :
+    0;
+  const revenue = availableBalance * (_exchangeRates[currency] || 0);
+
+  if (timeDepositAccount) {
+    deposit.time_deposit_account = timeDepositAccount;
+  }
+
+  return {
+    ...deposit,
+    revenue,
+    pl: revenue - cost,
+  };
+}
+
+/**
  * Show profit or loss by calculating the revenues & costs
  */
 function _calculateROI() {
   if (_depositList.length && Object.keys(_exchangeRates).length) {
-    _depositList = _depositList.map((deposit) => {
-      const { history, currency, cost } = deposit;
-      const latestHistory = history?.[history.length - 1];
-      const availableBalance = latestHistory ?
-        (latestHistory.time_deposit_amount +
-        latestHistory.received_gross_interest_amount) :
-        0;
-      const revenue = availableBalance * (_exchangeRates[currency] || 0);
-      return {
-        ...deposit,
-        revenue,
-        pl: revenue - cost,
-      };
-    });
+    _depositList = _depositList.map((deposit) => _withPL(deposit));
     window.dispatchEvent(new CustomEvent('depositlistchanged', {
       detail: {
         success: true,
@@ -84,8 +97,7 @@ async function _getDeposit(timeDepositAccount) {
   const depositSnapshot = await getDoc(depositRef);
   if (depositSnapshot.exists()) {
     const deposit = depositSnapshot.data();
-    deposit.time_deposit_account = timeDepositAccount;
-    return deposit;
+    return _withPL(deposit, timeDepositAccount);
   }
   return null;
 }
@@ -136,10 +148,7 @@ export async function createDepositAccount(timeDepositAccount, data) {
     const newDoc = doc(_db, _collectionId, timeDepositAccount);
     await setDoc(newDoc, data);
     _depositList = [
-      {
-        time_deposit_account: timeDepositAccount,
-        ...data,
-      },
+      _withPL(data, timeDepositAccount),
       ..._depositList,
     ];
     success = true;

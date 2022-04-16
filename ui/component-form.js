@@ -68,7 +68,7 @@ class ComponentForm extends BaseElement {
       month: +date[1],
       day: +date[2],
     };
-    createDepositAccount(account, data);
+    createDepositAccount(account.value, data);
   }
 
   /**
@@ -118,7 +118,7 @@ class ComponentForm extends BaseElement {
       <component-input
         id="init_date"
         label="Start Date"
-        type="data"
+        type="date"
         initvalue="${new Date().toISOString().split('T')[0]}"
         required
       >
