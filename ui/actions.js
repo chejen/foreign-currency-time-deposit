@@ -9,11 +9,16 @@ import {
   updateDoc,
   arrayUnion,
 } from 'firebase/firestore/lite';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
+const _collectionId = process.env.collectionId;
 let _firebaseConfig;
 let _app;
 let _db;
-let _collectionId;
+let _auth;
 let _depositList = [];
 let _exchangeRates = {};
 let _initializationError;
@@ -22,7 +27,17 @@ try {
   _firebaseConfig = JSON.parse(process.env.firebaseConfig);
   _app = initializeApp(_firebaseConfig);
   _db = getFirestore(_app);
-  _collectionId = process.env.collectionId || 'time-deposit';
+  if (process.env.auth == 'email') {
+    _auth = getAuth(_app);
+    _auth.onAuthStateChanged((user) => {
+      window.dispatchEvent(new CustomEvent('authstatechanged', {
+        detail: {
+          success: true,
+          result: user || {},
+        },
+      }));
+    });
+  }
 } catch (err) {
   _initializationError = `
     There is something wrong while initializing the app.
@@ -33,6 +48,24 @@ try {
 
 export const initializationError = _initializationError;
 
+/**
+ * Sign in with Firebase Authentication
+ * @param {string} email The e-mail address
+ * @param {string} pwd The password
+ */
+export function signInWithAuth(email, pwd) {
+  signInWithEmailAndPassword(_auth, email, pwd)
+    .catch((err) => {
+      console.error('Failed to signInWithAuth.', err);
+      window.dispatchEvent(new CustomEvent('authstatechanged', {
+        detail: {
+          success: false,
+          type: 'signInWithAuth',
+          result: err.message,
+        },
+      }));
+    });
+}
 
 /**
  * Get the deposit index from an array

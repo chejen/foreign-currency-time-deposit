@@ -12,6 +12,9 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         firebaseConfig: JSON.stringify(process.env.firebaseConfig),
+        collectionId:
+          JSON.stringify(process.env.collectionId || 'time-deposit'),
+        auth: JSON.stringify(process.env.auth),
       },
     }),
   ],

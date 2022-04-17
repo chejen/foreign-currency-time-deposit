@@ -11,7 +11,7 @@ A responsive and progressive web app built on top of Web Components.
 
 ## Prerequisite
 1. Log into Google account and go to [Firebase console](https://console.firebase.google.com/), and then **Add project**.
-2. Let's say we've added a new `time-deposit-demo` project, then let's move on to the [Firestore Database](https://console.firebase.google.com/project/time-deposit-demo/firestore) to **Create database**.
+2. Say we've added a new `time-deposit-demo` project, then let's move on to the [Firestore Database](https://console.firebase.google.com/project/time-deposit-demo/firestore) to **Create database**.
 3. Navigate to [Project Overview](https://console.firebase.google.com/project/time-deposit-demo/overview), click the web(</>) icon to **Add an app to get started**. After the **Register app** step, we should get the `firebaseConfig` like this:
 ```js
 const firebaseConfig = {
@@ -42,3 +42,31 @@ yarn
 npm start
 ```
 5. Navigate to http://localhost:8080
+
+
+## Optional environment variables
+### collectionId
+The Firestore collection of this app is `time-deposit` by default. You can override this by setting `collectionId`:
+```properties
+collectionId=custom-collection-id
+```
+
+### signInWithEmailAndPassword
+If you'd like, you can enable password-based log-in and authenticate with Firebase
+1. In the Firebase console > **Authentication** section > [**Sign-in method**](https://console.firebase.google.com/project/time-deposit-demo/authentication/providers) tab, choose **Email/Password** sign-in method to enable it.
+2. In the Firebase console > **Authentication** section > [**Users**](https://console.firebase.google.com/project/time-deposit-demo/authentication/users) tab, add an user with Email and Password.
+
+3. Update Firestore [**Rules**](https://console.firebase.google.com/project/automatic-time-deposit/firestore/rules):
+```
+match /databases/{database}/documents {
+  match /{document=**} {
+    allow read, write: if
+        request.auth.token.email == 'your-email-address@foo.bar';
+  }
+}
+```
+
+4. Enable web app's setting via the `auth` environment variable:
+```properties
+auth=email
+```

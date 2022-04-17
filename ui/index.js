@@ -1,10 +1,12 @@
 import { html, css } from 'lit';
 import BaseElement from './base';
+import './component-input';
 import './component-toast';
 import './deposit-overview';
 import './deposit-details';
 import {
   initializationError,
+  signInWithAuth,
   getDeposits,
   getExchangeRates,
 } from './actions';
@@ -27,9 +29,30 @@ class TimeDeposit extends BaseElement {
       padding: 10px;
       margin-top: 30px;
     }
+    .loading {
+      text-align: center;
+    }
+    .auth {
+      padding: 25px;
+      text-align: center;
+    }
+    .auth img {
+      margin: 10px 0;
+    }
+    .auth component-input {
+      display: block;
+      margin: 10px 0;
+    }
     deposit-details {
       overflow: hidden;
       flex: 1;
+    }
+    @media only screen and (min-width: 481px) {
+      .auth {
+        margin-top: 30px;
+        border: 1px solid var(--color-primary);
+        border-raduis: 3px;
+      }
     }
     @media only screen and (max-width: 480px) {
       :host {
@@ -42,6 +65,10 @@ class TimeDeposit extends BaseElement {
   `;
 
   static properties = {
+    user: {
+      type: Object,
+      attribute: false,
+    },
     deposits: {
       type: Array,
       attribute: false,
@@ -62,8 +89,18 @@ class TimeDeposit extends BaseElement {
         navigator.serviceWorker.register('/service-worker.js');
       }
     }, { once: true });
+    window.addEventListener('authstatechanged', this);
     window.addEventListener('depositlistchanged', this);
-    if (!initializationError) {
+    if (!initializationError && process.env.auth !== 'email') {
+      this.getData();
+    }
+  }
+
+  /**
+   * Get deposits and exchange rates
+   */
+  getData() {
+    if (process.env.auth !== 'email' || this.user?.email) {
       getDeposits();
       getExchangeRates().then(({ result, success }) => {
         this.exchangeRates = result;
@@ -78,6 +115,17 @@ class TimeDeposit extends BaseElement {
    */
   handleEvent = (event) => {
     const { success, type, result } = event.detail;
+
+    if (event.type === 'authstatechanged') {
+      if (!success) {
+        this.showToast(`Failed to sign in (${result})`, 'error');
+        return;
+      }
+      this.user = result;
+      this.getData();
+      return;
+    }
+
     let message;
     this.deposits = result;
     switch (type) {
@@ -101,6 +149,16 @@ class TimeDeposit extends BaseElement {
   };
 
   /**
+   * Perform signIn() if the Enter key is pressed
+   * @param {KeyboardEvent} event The keydown event
+   */
+  keydownHandler(event) {
+    if (event.key === 'Enter') {
+      this.signIn();
+    }
+  }
+
+  /**
    * Reveal a toast.
    * @param {string} message The message expected to be displayed
    * @param {string} type The toast type
@@ -114,6 +172,19 @@ class TimeDeposit extends BaseElement {
         },
       }));
     });
+  }
+
+  /**
+   * Email address and password sign-in
+   */
+  signIn() {
+    const email = this.shadowRoot.getElementById('email');
+    const pwd = this.shadowRoot.getElementById('pwd');
+    const isEmailValid = email.isValid;
+    const isPwdValid = pwd.isValid;
+    if (isEmailValid && isPwdValid) {
+      signInWithAuth(email.value, pwd.value);
+    }
   }
 
   /**
@@ -131,14 +202,43 @@ class TimeDeposit extends BaseElement {
   render() {
     return initializationError ?
       html`<div class="error message">${initializationError}</div>` :
-      html`
-        <deposit-overview
-          .deposits="${this.deposits}"
-          .exchangeRates="${this.exchangeRates}"
-        >
-        </deposit-overview>
-        <deposit-details .deposits="${this.deposits}"></deposit-details>
-      `;
+      (process.env.auth === 'email' && !this.user?.email) ?
+        (this.user ?
+          html`
+            <div class="auth">
+              <img src="/deposit.png" width="256" height="256" />
+              <component-input
+                id="email"
+                label="E-mail"
+                required
+                @keydown=${this.keydownHandler}
+              >
+              </component-input>
+              <component-input
+                id="pwd"
+                label="Password"
+                type="password"
+                required
+                @keydown=${this.keydownHandler}
+              >
+              </component-input>
+              <button @click=${this.signIn}>Sign in</button>
+            </div>
+          ` :
+          html `
+            <div class="loading">
+              <img src="./loading.gif" width="96px" height="96px" />
+            </div>
+          `
+        ) :
+        html`
+          <deposit-overview
+            .deposits="${this.deposits}"
+            .exchangeRates="${this.exchangeRates}"
+          >
+          </deposit-overview>
+          <deposit-details .deposits="${this.deposits}"></deposit-details>
+        `;
   }
 }
 
