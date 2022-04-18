@@ -12,6 +12,7 @@ import {
 import {
   getAuth,
   signInWithEmailAndPassword,
+  signOut,
 } from 'firebase/auth';
 
 const _collectionId = process.env.collectionId;
@@ -27,7 +28,7 @@ try {
   _firebaseConfig = JSON.parse(process.env.firebaseConfig);
   _app = initializeApp(_firebaseConfig);
   _db = getFirestore(_app);
-  if (process.env.auth == 'email') {
+  if (process.env.auth === 'email') {
     _auth = getAuth(_app);
     _auth.onAuthStateChanged((user) => {
       window.dispatchEvent(new CustomEvent('authstatechanged', {
@@ -65,6 +66,13 @@ export function signInWithAuth(email, pwd) {
         },
       }));
     });
+}
+
+/**
+ * Sign the user out
+ */
+export function signOutWithAuth() {
+  signOut(_auth);
 }
 
 /**

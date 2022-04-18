@@ -1,6 +1,7 @@
 import { css, html } from 'lit';
 import BaseElement from './base';
 import { format } from './utils';
+import { signOutWithAuth } from './actions';
 import './component-slide';
 
 /** Custom `deposit-overview` component */
@@ -9,6 +10,7 @@ class DepositOverview extends BaseElement {
     :host {
       --indicator-height: 20px;
       width: 100%;
+      position: relative;
     }
     ul {
       margin: 15px 0;
@@ -45,6 +47,14 @@ class DepositOverview extends BaseElement {
       color: white;
       border-radius: 3px;
     }
+    .sign-out {
+      cursor: pointer;
+      position: absolute;
+      color: var(--color-primary);
+      left: 10px;
+      top: 8px;
+      font-size: 0.9rem;
+    }
     @media only screen and (min-width: 769px) and (max-width: 1024px) {
       .flex-item {
         width: 50%;
@@ -56,6 +66,10 @@ class DepositOverview extends BaseElement {
       }
     }
     @media only screen and (max-width: 480px) {
+      .sign-out {
+        left: 5px;
+        top: 5px;
+      }
       #slides {
         height: calc(100% - var(--indicator-height));
         flex-wrap: nowrap;
@@ -164,6 +178,11 @@ class DepositOverview extends BaseElement {
       '';
 
     return html`
+      ${process.env.auth === 'email' ? html`
+        <div class="sign-out" @click=${signOutWithAuth}>
+          <u>Sign out</u>
+        </div>` : null
+      }
       <div id="slides" @scroll="${this.scrollHandler}">
         <div class="flex-item">
           <component-slide

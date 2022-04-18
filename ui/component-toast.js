@@ -11,6 +11,7 @@ class ComponentToast extends BaseElement {
       z-index: var(--z-index-toast);
       width: var(--toast-width);
       left: 50%;
+      top: 0;
       margin-left: calc(0px - var(--toast-width) / 2);
       padding: 3px;
       border-radius: 5px;
