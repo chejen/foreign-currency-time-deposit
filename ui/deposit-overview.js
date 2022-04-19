@@ -1,8 +1,8 @@
 import { css, html } from 'lit';
-import BaseElement from './base';
 import { format } from './utils';
 import { signOutWithAuth } from './actions';
-import './component-slide';
+import BaseElement from './components/BaseElement';
+import './components/Slide';
 
 /** Custom `deposit-overview` component */
 class DepositOverview extends BaseElement {
@@ -172,13 +172,13 @@ class DepositOverview extends BaseElement {
       totalCosts += cost;
       totalRevenues += revenue;
     });
-    const pl = this.deposits?.length && isExchangeRatesAvailable ?
-      format(totalRevenues - totalCosts, 1) + ', ' +
+    const totalPl = this.deposits?.length && isExchangeRatesAvailable ?
+      format(totalRevenues - totalCosts, 1) + ' / ' +
       format((totalRevenues - totalCosts) / totalCosts * 100, 1) + '%' :
       '';
 
     return html`
-      ${process.env.auth === 'email' ? html`
+      ${process.env.TIME_DEPOSIT_AUTH === 'email' ? html`
         <div class="sign-out" @click=${signOutWithAuth}>
           <u>Sign out</u>
         </div>` : null
@@ -192,7 +192,7 @@ class DepositOverview extends BaseElement {
               format(totalRevenues, 1) :
               ''
             }"
-            pl="${pl}"
+            pl="${totalPl}"
             ?isprofit="${totalRevenues - totalCosts > 0}"
             ?isloading="${!this.exchangeRates || !this.deposits}"
           >

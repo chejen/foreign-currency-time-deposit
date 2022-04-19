@@ -15,7 +15,7 @@ import {
   signOut,
 } from 'firebase/auth';
 
-const _collectionId = process.env.collectionId;
+const _collectionId = process.env.TIME_DEPOSIT_COLLECTION_ID;
 let _firebaseConfig;
 let _app;
 let _db;
@@ -25,10 +25,10 @@ let _exchangeRates = {};
 let _initializationError;
 
 try {
-  _firebaseConfig = JSON.parse(process.env.firebaseConfig);
+  _firebaseConfig = JSON.parse(process.env.TIME_DEPOSIT_FIREBASE_CONFIG);
   _app = initializeApp(_firebaseConfig);
   _db = getFirestore(_app);
-  if (process.env.auth === 'email') {
+  if (process.env.TIME_DEPOSIT_AUTH === 'email') {
     _auth = getAuth(_app);
     _auth.onAuthStateChanged((user) => {
       window.dispatchEvent(new CustomEvent('authstatechanged', {
@@ -42,7 +42,7 @@ try {
 } catch (err) {
   _initializationError = `
     There is something wrong while initializing the app.
-    Please check out with your firebaseConfig.
+    Please check out with your firebaseConfig (TIME_DEPOSIT_FIREBASE_CONFIG).
   `;
   console.error('Error occurs while parsing firebase config:', err);
 }
@@ -61,7 +61,7 @@ export function signInWithAuth(email, pwd) {
       window.dispatchEvent(new CustomEvent('authstatechanged', {
         detail: {
           success: false,
-          type: 'signInWithAuth',
+          action: 'signInWithAuth',
           result: err.message,
         },
       }));
@@ -93,12 +93,12 @@ function _getDepositIndex(timeDepositAccount) {
  * @return {object} The transformed deposit with revenue and pl
  */
 function _withPL(deposit, timeDepositAccount) {
-  const { history, currency, cost } = deposit;
+  const { history, currency, cost, exchange_rate: exchangeRate } = deposit;
   const latestHistory = history?.[history.length - 1];
   const availableBalance = latestHistory ?
     (latestHistory.time_deposit_amount +
     latestHistory.received_gross_interest_amount) :
-    0;
+    cost / exchangeRate;
   const revenue = availableBalance * (_exchangeRates[currency] || 0);
 
   if (timeDepositAccount) {
@@ -121,7 +121,7 @@ function _calculateROI() {
     window.dispatchEvent(new CustomEvent('depositlistchanged', {
       detail: {
         success: true,
-        type: 'calculateROI',
+        action: 'calculateROI',
         result: _depositList,
       },
     }));
@@ -169,7 +169,7 @@ export async function getDeposits() {
       window.dispatchEvent(new CustomEvent('depositlistchanged', {
         detail: {
           success,
-          type: 'getDeposits',
+          action: 'getDeposits',
           result: _depositList,
         },
       }));
@@ -201,7 +201,7 @@ export async function createDepositAccount(timeDepositAccount, data) {
     window.dispatchEvent(new CustomEvent('depositlistchanged', {
       detail: {
         success,
-        type: 'createDepositAccount',
+        action: 'createDepositAccount',
         result: _depositList,
       },
     }));
@@ -244,7 +244,7 @@ export async function updateDepositHistory(timeDepositAccount, data) {
     window.dispatchEvent(new CustomEvent('depositlistchanged', {
       detail: {
         success,
-        type: 'updateDepositHistory',
+        action: 'updateDepositHistory',
         result: _depositList,
       },
     }));
@@ -295,7 +295,7 @@ export function sortDepositList(by, options) {
   window.dispatchEvent(new CustomEvent('depositlistchanged', {
     detail: {
       success: true,
-      type: 'sortDepositList',
+      action: 'sortDepositList',
       result: options?.orderby === 'desc' ? dup.reverse() : dup,
     },
   }));

@@ -1,8 +1,8 @@
 import { css, html } from 'lit';
-import BaseElement from './base';
-import { updateDepositHistory } from './actions';
-import { HEADER_NAME } from './constants';
-import { format, toFixed } from './utils';
+import BaseElement from './BaseElement';
+import { updateDepositHistory } from '../actions';
+import { HEADER_NAME } from '../constants';
+import { format, toFixed } from '../utils';
 
 const {
   INTEREST_START_DATE,
@@ -14,7 +14,7 @@ const {
 } = HEADER_NAME;
 
 /** Custom `component-table` component */
-class ComponentTable extends BaseElement {
+class Table extends BaseElement {
   static styles = css`
     table {
       width: 100%;
@@ -104,7 +104,8 @@ class ComponentTable extends BaseElement {
       tr.querySelector('#received_gross_interest_amount');
     const interestRate = tr.querySelector('#interest_rate');
 
-    const isPrincipalAmountValid = principalAmount.isValid;
+    const isPrincipalAmountValid = principalAmount.type === 'hidden' ||
+      principalAmount.isValid;
     const isGrossAmountValid = grossAmount.isValid;
     const isInterestRateValid = interestRate.isValid;
     if (
@@ -120,7 +121,8 @@ class ComponentTable extends BaseElement {
       {
         interest_start_year:
           +tr.querySelector('#interest_start_year').value,
-        time_deposit_amount: principalAmount.value,
+        // may be a string if it's from <input type="hidden">
+        time_deposit_amount: +principalAmount.value,
         received_gross_interest_amount: grossAmount.value,
         interest_rate: interestRate.value,
       },
@@ -180,26 +182,23 @@ class ComponentTable extends BaseElement {
       history,
     } = this.deposit;
     const latestHistory = history?.[history.length - 1];
-    const isExpired = latestHistory ?
-      (
-        // (endYr = startYr + 1)
-        // There would be a new record
-        // if the difference between today and the next yr of the endYr
-        // is over 1 yr
-        Date.UTC(latestHistory.interest_start_year + 2, month - 1, day) <
-        Date.now()
-      ) :
-      null;
+    // (endYr = startYr + 1)
+    // There would be a new record if the difference
+    // between "today" and "the next yr of the last endYr"
+    // is more than 1 yr
+    const lastEndYear = latestHistory ?
+      latestHistory.interest_start_year + 1 :
+      year;
+    const isExpired = Date.UTC(lastEndYear + 1, month - 1, day) < Date.now();
     const availableBalance = latestHistory ? toFixed(
       latestHistory.time_deposit_amount,
       latestHistory.received_gross_interest_amount,
     ) : 0;
 
-    if (history && !isExpired) {
+    if (!isExpired) {
       return null;
     }
 
-    const startYear = isExpired ? latestHistory.interest_start_year + 1 : year;
     return html`
       <tr @click="${this.btnClickHandler}">
         <td data-th="${INTEREST_START_DATE}">
@@ -211,12 +210,14 @@ class ComponentTable extends BaseElement {
           <input
             type="hidden"
             id="interest_start_year"
-            value="${startYear}"
+            value="${lastEndYear}"
           >
-          ${new Date(Date.UTC(startYear, month - 1, day)).toLocaleDateString()}
+          ${new Date(
+            Date.UTC(lastEndYear, month - 1, day),
+          ).toLocaleDateString()}
         </td>
         <td data-th="${INTEREST_END_DATE}">
-          ${new Date(Date.UTC(startYear + 1, month - 1, day))
+          ${new Date(Date.UTC(lastEndYear + 1, month - 1, day))
             .toLocaleDateString()
           }
         </td>
@@ -286,4 +287,4 @@ class ComponentTable extends BaseElement {
   }
 }
 
-customElements.define('component-table', ComponentTable);
+customElements.define('component-table', Table);

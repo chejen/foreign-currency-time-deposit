@@ -1,9 +1,9 @@
 import { css, html } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
-import BaseElement from './base';
+import BaseElement from './BaseElement';
 
 /** Custom `component-toast` component */
-class ComponentToast extends BaseElement {
+class Toast extends BaseElement {
   static styles = css`
     .wrapper {
       --toast-width: 300px;
@@ -16,7 +16,7 @@ class ComponentToast extends BaseElement {
       padding: 3px;
       border-radius: 5px;
       background-color: white;
-      opacity: 0;
+      opacity: .5;
       transform: translateY(-100%);
       transition: transform .75s, opacity .75s;
     }
@@ -108,4 +108,4 @@ class ComponentToast extends BaseElement {
   }
 }
 
-customElements.define('component-toast', ComponentToast);
+customElements.define('component-toast', Toast);

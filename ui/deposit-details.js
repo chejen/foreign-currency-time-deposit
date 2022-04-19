@@ -1,9 +1,9 @@
 import { html, css } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { sortDepositList } from './actions';
-import BaseElement from './base';
-import './component-form';
-import './component-card';
+import BaseElement from './components/BaseElement';
+import './components/Form';
+import './components/Card';
 
 /** Custom `deposit-details` component */
 class DepositDetails extends BaseElement {
@@ -180,7 +180,7 @@ class DepositDetails extends BaseElement {
           html`<div class="no-data">${
             this.deposits ?
               html`No time deposit records` :
-              html`<img src="./loading.gif" width="96px" height="96px" />`
+              html`<img src="./images/loading.gif" width="96" height="96" />`
           }</div>`
         }
         ${this.deposits?.map((deposit) => (

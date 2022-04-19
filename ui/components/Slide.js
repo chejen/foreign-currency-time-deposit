@@ -1,8 +1,8 @@
 import { css, html } from 'lit';
-import BaseElement from './base';
+import BaseElement from './BaseElement';
 
 /** Custom `component-slide` component */
-class ComponentSlide extends BaseElement {
+class Slide extends BaseElement {
   static styles = css`
     :host {
       display: flex;
@@ -81,7 +81,7 @@ class ComponentSlide extends BaseElement {
         }
       </div>
       ${this.isLoading ?
-        html`<img src="./loading.gif" width="64px" height="64px" />` :
+        html`<img src="./images/loading.gif" width="64" height="64" />` :
         html`
           <slot></slot>
           <div class="bottom-line">
@@ -100,4 +100,4 @@ class ComponentSlide extends BaseElement {
   }
 }
 
-customElements.define('component-slide', ComponentSlide);
+customElements.define('component-slide', Slide);

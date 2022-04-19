@@ -1,11 +1,11 @@
 import { css, html } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
-import BaseElement from './base';
-import { format } from './utils';
-import './component-table';
+import BaseElement from './BaseElement';
+import { format } from '../utils';
+import './Table';
 
 /** Custom `component-card` component */
-class ComponentCard extends BaseElement {
+class Card extends BaseElement {
   static styles = css`
     :host {
       display: block;
@@ -143,10 +143,8 @@ class ComponentCard extends BaseElement {
       pl,
       exchange_rate: exchangeRate,
       currency,
-      history,
     } = this.deposit;
     const date = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString();
-    const latestHistory = history?.[history.length - 1];
 
     return html`
       <div id="heading">
@@ -174,7 +172,7 @@ class ComponentCard extends BaseElement {
             <span class="field-name">Exchange Rate:</span>
             <span class="field-value">${format(exchangeRate)}</span>
           </div>
-          ${latestHistory && pl ? html`
+          ${pl ? html`
             <div class="amount">
               <div>
                 <span class="field-name">Available Balance:</span>
@@ -204,4 +202,4 @@ class ComponentCard extends BaseElement {
   }
 }
 
-customElements.define('component-card', ComponentCard);
+customElements.define('component-card', Card);

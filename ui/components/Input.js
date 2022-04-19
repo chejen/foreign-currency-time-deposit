@@ -1,9 +1,9 @@
 import { css, html } from 'lit';
-import BaseElement from './base';
-import { ERROR_CODE } from './constants';
+import BaseElement from './BaseElement';
+import { ERROR_CODE } from '../constants';
 
 /** Custom `component-input` component */
-class ComponentInput extends BaseElement {
+class Input extends BaseElement {
   static styles = css`
     .input-field {
       display: flex;
@@ -168,4 +168,4 @@ class ComponentInput extends BaseElement {
   }
 }
 
-customElements.define('component-input', ComponentInput);
+customElements.define('component-input', Input);

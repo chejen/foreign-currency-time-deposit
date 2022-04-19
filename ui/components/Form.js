@@ -1,10 +1,10 @@
 import { css, html } from 'lit';
-import BaseElement from './base';
-import { createDepositAccount } from './actions';
-import './component-input';
+import BaseElement from './BaseElement';
+import { createDepositAccount } from '../actions';
+import './Input';
 
 /** Custom `component-form` component */
-class ComponentForm extends BaseElement {
+class Form extends BaseElement {
   static styles = css`
     :host {
       display: flex;
@@ -132,4 +132,4 @@ class ComponentForm extends BaseElement {
   }
 }
 
-customElements.define('component-form', ComponentForm);
+customElements.define('component-form', Form);

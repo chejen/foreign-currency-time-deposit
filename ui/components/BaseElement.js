@@ -13,7 +13,7 @@ export default class BaseElement extends LitElement {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.type = 'text/css';
-      link.href = href;
+      link.href = `css/${href}`;
       this.shadowRoot.prepend(link);
     });
     return root;

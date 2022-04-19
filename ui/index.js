@@ -1,7 +1,7 @@
 import { html, css } from 'lit';
-import BaseElement from './base';
-import './component-input';
-import './component-toast';
+import BaseElement from './components/BaseElement';
+import './components/Input';
+import './components/Toast';
 import './deposit-overview';
 import './deposit-details';
 import {
@@ -91,7 +91,7 @@ class TimeDeposit extends BaseElement {
     }, { once: true });
     window.addEventListener('authstatechanged', this);
     window.addEventListener('depositlistchanged', this);
-    if (!initializationError && process.env.auth !== 'email') {
+    if (!initializationError && process.env.TIME_DEPOSIT_AUTH !== 'email') {
       this.getData();
     }
   }
@@ -100,7 +100,7 @@ class TimeDeposit extends BaseElement {
    * Get deposits and exchange rates
    */
   getData() {
-    if (process.env.auth !== 'email' || this.user?.email) {
+    if (process.env.TIME_DEPOSIT_AUTH !== 'email' || this.user?.email) {
       getDeposits();
       getExchangeRates().then(({ result, success }) => {
         this.exchangeRates = result;
@@ -114,7 +114,7 @@ class TimeDeposit extends BaseElement {
    * @param {CustomEvent} event A custom event
    */
   handleEvent = (event) => {
-    const { success, type, result } = event.detail;
+    const { success, action, result } = event.detail;
 
     if (event.type === 'authstatechanged') {
       if (!success) {
@@ -126,26 +126,28 @@ class TimeDeposit extends BaseElement {
       return;
     }
 
-    let message;
-    this.deposits = result;
-    switch (type) {
-      case 'getDeposits':
-        !success && this.showToast('Failed to load deposit list.', 'error');
-        return;
-      case 'createDepositAccount':
-        message = success ?
-          'Successfully add a deposit account.' :
-          'Failed to add a deposit account.';
-        break;
-      case 'updateDepositHistory':
-        message = success ?
-          'Successfully update deposit history.' :
-          'Failed to update deposit history.';
-        break;
-      default: // sortDepositList, calculateROI
-        return;
+    if (event.type === 'depositlistchanged') {
+      let message;
+      this.deposits = result;
+      switch (action) {
+        case 'getDeposits':
+          !success && this.showToast('Failed to load deposit list.', 'error');
+          return;
+        case 'createDepositAccount':
+          message = success ?
+            'Successfully add a deposit account.' :
+            'Failed to add a deposit account.';
+          break;
+        case 'updateDepositHistory':
+          message = success ?
+            'Successfully update deposit history.' :
+            'Failed to update deposit history.';
+          break;
+        default: // sortDepositList, calculateROI
+          return;
+      }
+      this.showToast(message, success ? 'success' : 'error');
     }
-    this.showToast(message, success ? 'success' : 'error');
   };
 
   /**
@@ -202,11 +204,11 @@ class TimeDeposit extends BaseElement {
   render() {
     return initializationError ?
       html`<div class="error message">${initializationError}</div>` :
-      (process.env.auth === 'email' && !this.user?.email) ?
+      (process.env.TIME_DEPOSIT_AUTH === 'email' && !this.user?.email) ?
         (this.user ?
           html`
             <div class="auth">
-              <img src="/deposit.png" width="256" height="256" />
+              <img src="/images/deposit.png" width="256" height="256" />
               <component-input
                 id="email"
                 label="E-mail"
@@ -227,7 +229,7 @@ class TimeDeposit extends BaseElement {
           ` :
           html `
             <div class="loading">
-              <img src="./loading.gif" width="96px" height="96px" />
+              <img src="./images/loading.gif" width="96" height="96" />
             </div>
           `
         ) :

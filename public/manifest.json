@@ -2,7 +2,7 @@
   "short_name": "Time Deposit",
   "name": "Foreign Currency Time Deposit",
   "icons": [{
-    "src": "/deposit.png",
+    "src": "/images/deposit.png",
     "type": "image/png",
     "sizes": "512x512",
     "purpose": "any maskable"
