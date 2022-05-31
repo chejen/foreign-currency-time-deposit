@@ -70,3 +70,13 @@ match /databases/{database}/documents {
 ```properties
 TIME_DEPOSIT_AUTH=email
 ```
+
+## Demo
+### On desktop
+![desktop](./demo/desktop.png)
+
+### On tablet
+![tablet](./demo/tablet.png)
+
+### On phone
+![phone](./demo/phone.png)
