@@ -39,7 +39,7 @@ TIME_DEPOSIT_FIREBASE_CONFIG={"apiKey":"...","authDomain":"...","projectId":"...
 4. Install dependencies and start the server.
 ```sh
 yarn
-npm start
+yarn dev
 ```
 5. Navigate to http://localhost:8080
 

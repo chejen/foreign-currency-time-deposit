@@ -39,7 +39,7 @@ app.get('/api/exchange-rate', (req, res) => {
         'American Dollar (USD)': '',
         'Australian Dollar (AUD)': '',
         'New Zealand Dollar (NZD)': '',
-        'China Yen (CNY)': '',
+        'Chinese Yuan (CNY)': '',
       };
       $('.table tbody tr')
         .each((i, el) => {
